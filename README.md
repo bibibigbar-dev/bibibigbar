@@ -1,10 +1,12 @@
-# Living in Dallas
+# bibibigbar — The Big Little Show
 
-Community hub for people settling into Dallas–Fort Worth life. Browse topic boards, write posts, and manage content from separate member and admin workspaces.
+A personal website styled as a vintage circus: a cream-and-vermilion playbill, an original SVG circus tent with interactive lighting, a personal introduction, and a live journal feed. Existing Dallas–Fort Worth topic boards, member workspaces, and admin tools remain available.
 
 ## Features
 
-- Main landing page branded as **Living in Dallas**
+- Responsive **bibibigbar** landing page with program, introduction, journal, and invitation sections
+- Keyboard-accessible stage lighting toggle and reduced-motion support
+- System font stacks and self-contained illustration; no external image or font downloads needed
 - Multiple topic boards (Free Talk, Living Tips, Housing, Food, Jobs, Marketplace, Q&A)
 - Member area (`/my`) for writing and managing your own posts
 - Admin console (`/admin`) for boards, moderation, and user roles
