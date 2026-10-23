@@ -1,28 +1,17 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { getCurrentUser, getActiveBoards } from "@/lib/queries";
 import "./globals.css";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-display",
-});
-
 export const metadata: Metadata = {
   title: {
-    default: "Living in Dallas",
-    template: "%s · Living in Dallas",
+    default: "bibibigbar — The Big Little Show",
+    template: "%s · bibibigbar",
   },
   description:
-    "A community hub for people building everyday life in Dallas — tips, housing, food, jobs, and neighbor talk.",
+    "조금 엉뚱해도, 꽤 근사한 나의 세계. 생각을 만들고 일상을 기록하는 bibibigbar의 작은 서커스에 오신 것을 환영합니다.",
 };
 
 export default async function RootLayout({
@@ -33,10 +22,11 @@ export default async function RootLayout({
   const [user, boards] = await Promise.all([getCurrentUser(), getActiveBoards()]);
 
   return (
-    <html lang="en">
-      <body className={`${manrope.variable} ${fraunces.variable} font-sans antialiased`}>
+    <html lang="ko">
+      <body className="font-sans antialiased">
+        <a href="#main-content" className="skip-link">본문으로 바로가기</a>
         <SiteHeader user={user} boards={boards} />
-        <main className="min-h-[70vh]">{children}</main>
+        <main id="main-content" className="min-h-[70vh]">{children}</main>
         <SiteFooter />
         <Analytics />
       </body>
