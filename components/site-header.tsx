@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { logoutAction } from "@/lib/actions/auth";
-import { blogMenuHref } from "@/lib/blog/config";
+import { blogMenuHref, mainOrigin, shopMenuHref } from "@/lib/blog/config";
 import type { Board, SessionUser } from "@/lib/types";
 
 interface SiteHeaderProps {
@@ -8,28 +9,33 @@ interface SiteHeaderProps {
   boards: Board[];
 }
 
-export function SiteHeader({ user, boards }: SiteHeaderProps) {
+export async function SiteHeader({ user, boards }: SiteHeaderProps) {
+  const headerStore = await headers();
+  const onShopHost = headerStore.get("x-bibibig-site") === "shop";
+  const homeHref = onShopHost ? mainOrigin() : "/";
+  const sectionHref = (hash: string) => (onShopHost ? `${mainOrigin()}${hash}` : hash);
   const journalHref = blogMenuHref();
+  const shopHref = shopMenuHref();
 
   return (
     <header className="site-header">
       <div className="announcement"><span aria-hidden="true">✦</span> THE INTERNET IS A CIRCUS. THIS IS MY LITTLE CORNER. <span aria-hidden="true">✦</span></div>
       <div className="container flex items-center justify-between gap-4 py-3">
-        <Link href="/" className="site-wordmark" aria-label="bibibigbar home">
+        <Link href={homeHref} className="site-wordmark" aria-label="bibibigbar home">
           <span aria-hidden="true">✳</span> bibibigbar<span className="wordmark-dot">.</span>
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-7 text-sm font-semibold text-[var(--muted)] lg:flex">
-          <Link href="/#program" className="hover:text-[var(--sky-deep)]">
+          <Link href={sectionHref("/#program")} className="hover:text-[var(--sky-deep)]">
             Program
           </Link>
-          <Link href="/#about" className="hover:text-[var(--sky-deep)]">About</Link>
+          <Link href={sectionHref("/#about")} className="hover:text-[var(--sky-deep)]">About</Link>
           <a href={journalHref} className="hover:text-[var(--sky-deep)]">
             Blog
           </a>
-          <Link href="/shop" className="hover:text-[var(--sky-deep)]">
+          <a href={shopHref} className="hover:text-[var(--sky-deep)]">
             Shop
-          </Link>
+          </a>
           <div className="group relative">
             <Link href="/boards" className="hover:text-[var(--sky-deep)]">
               Stories
@@ -83,14 +89,14 @@ export function SiteHeader({ user, boards }: SiteHeaderProps) {
       </div>
 
       <div className="container flex gap-2 overflow-x-auto pb-3 lg:hidden">
-        <Link href="/#program" className="badge whitespace-nowrap">Program</Link>
-        <Link href="/#about" className="badge whitespace-nowrap">About</Link>
+        <Link href={sectionHref("/#program")} className="badge whitespace-nowrap">Program</Link>
+        <Link href={sectionHref("/#about")} className="badge whitespace-nowrap">About</Link>
         <a href={journalHref} className="badge whitespace-nowrap">
           Blog
         </a>
-        <Link href="/shop" className="badge whitespace-nowrap">
+        <a href={shopHref} className="badge whitespace-nowrap">
           Shop
-        </Link>
+        </a>
         <Link href="/boards" className="badge whitespace-nowrap">
           All boards
         </Link>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getBlogRepository } from "@/lib/blog";
+import { shopPath } from "@/lib/blog/paths";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const visible = activeCategory
     ? products.filter((product) => product.category.toLowerCase() === activeCategory.toLowerCase())
     : products;
+  const allHref = await shopPath();
 
   return (
     <div className="container py-12">
@@ -31,13 +33,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
       {categories.length ? (
         <div className="mt-8 flex flex-wrap gap-2">
-          <Link href="/shop" className={`blog-chip ${activeCategory ? "" : "is-active"}`}>
+          <Link href={allHref} className={`blog-chip ${activeCategory ? "" : "is-active"}`}>
             All
           </Link>
           {categories.map((item) => (
             <Link
               key={item}
-              href={`/shop?category=${encodeURIComponent(item)}`}
+              href={`${allHref}?category=${encodeURIComponent(item)}`}
               className={`blog-chip ${activeCategory.toLowerCase() === item.toLowerCase() ? "is-active" : ""}`}
             >
               {item}

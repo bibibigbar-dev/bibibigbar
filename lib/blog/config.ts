@@ -8,6 +8,10 @@ export function blogOrigin() {
   return (process.env.NEXT_PUBLIC_BLOG_URL || "https://blog.bibibigbar.com").replace(/\/$/, "");
 }
 
+export function shopOrigin() {
+  return (process.env.NEXT_PUBLIC_SHOP_URL || "https://shop.bibibigbar.com").replace(/\/$/, "");
+}
+
 export function mainOrigin() {
   return (process.env.NEXT_PUBLIC_SITE_URL || "https://bibibigbar.com").replace(/\/$/, "");
 }
@@ -15,6 +19,11 @@ export function mainOrigin() {
 export function blogMenuHref() {
   if (process.env.NODE_ENV !== "production") return "/blog";
   return blogOrigin();
+}
+
+export function shopMenuHref() {
+  if (process.env.NODE_ENV !== "production") return "/shop";
+  return shopOrigin();
 }
 
 export function adminBlogHref() {
