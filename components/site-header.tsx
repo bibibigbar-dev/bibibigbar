@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { logoutAction } from "@/lib/actions/auth";
+import { blogMenuHref } from "@/lib/blog/config";
 import type { Board, SessionUser } from "@/lib/types";
 
 interface SiteHeaderProps {
@@ -8,22 +9,30 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ user, boards }: SiteHeaderProps) {
+  const journalHref = blogMenuHref();
+
   return (
     <header className="site-header">
       <div className="announcement"><span aria-hidden="true">✦</span> THE INTERNET IS A CIRCUS. THIS IS MY LITTLE CORNER. <span aria-hidden="true">✦</span></div>
       <div className="container flex items-center justify-between gap-4 py-3">
-        <Link href="/" className="site-wordmark" aria-label="bibibigbar 홈">
+        <Link href="/" className="site-wordmark" aria-label="bibibigbar home">
           <span aria-hidden="true">✳</span> bibibigbar<span className="wordmark-dot">.</span>
         </Link>
 
-        <nav aria-label="메인 메뉴" className="hidden items-center gap-7 text-sm font-semibold text-[var(--muted)] lg:flex">
+        <nav aria-label="Main" className="hidden items-center gap-7 text-sm font-semibold text-[var(--muted)] lg:flex">
           <Link href="/#program" className="hover:text-[var(--sky-deep)]">
-            프로그램
+            Program
           </Link>
-          <Link href="/#about" className="hover:text-[var(--sky-deep)]">소개</Link>
+          <Link href="/#about" className="hover:text-[var(--sky-deep)]">About</Link>
+          <a href={journalHref} className="hover:text-[var(--sky-deep)]">
+            Blog
+          </a>
+          <Link href="/shop" className="hover:text-[var(--sky-deep)]">
+            Shop
+          </Link>
           <div className="group relative">
             <Link href="/boards" className="hover:text-[var(--sky-deep)]">
-              이야기
+              Stories
             </Link>
             <div className="pointer-events-none absolute left-0 top-full z-50 hidden min-w-[220px] pt-3 group-hover:pointer-events-auto group-hover:block group-focus-within:pointer-events-auto group-focus-within:block">
               <div className="surface rounded-2xl p-2 shadow-[var(--shadow)]">
@@ -65,11 +74,8 @@ export function SiteHeader({ user, boards }: SiteHeaderProps) {
             </>
           ) : (
             <>
-              <Link href="/login" className="btn btn-secondary !min-h-10 !px-4 text-sm">
-                Log in
-              </Link>
-              <Link href="/register" className="btn btn-primary !min-h-10 !px-4 text-sm">
-                입장하기 <span aria-hidden="true">↗</span>
+              <Link href="/login" className="btn btn-primary !min-h-10 !px-4 text-sm">
+                Come in <span aria-hidden="true">↗</span>
               </Link>
             </>
           )}
@@ -77,8 +83,14 @@ export function SiteHeader({ user, boards }: SiteHeaderProps) {
       </div>
 
       <div className="container flex gap-2 overflow-x-auto pb-3 lg:hidden">
-        <Link href="/#program" className="badge whitespace-nowrap">프로그램</Link>
-        <Link href="/#about" className="badge whitespace-nowrap">소개</Link>
+        <Link href="/#program" className="badge whitespace-nowrap">Program</Link>
+        <Link href="/#about" className="badge whitespace-nowrap">About</Link>
+        <a href={journalHref} className="badge whitespace-nowrap">
+          Blog
+        </a>
+        <Link href="/shop" className="badge whitespace-nowrap">
+          Shop
+        </Link>
         <Link href="/boards" className="badge whitespace-nowrap">
           All boards
         </Link>

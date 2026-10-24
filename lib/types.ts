@@ -1,3 +1,5 @@
+import type { BlogPost, BlogTopic, ShopProduct } from "./blog/types";
+
 export type UserRole = "user" | "admin";
 
 export interface User {
@@ -51,4 +53,7 @@ export interface AppStore {
   boards: Board[];
   posts: Post[];
   comments: Comment[];
+  blogPosts: BlogPost[];
+  blogTopics: BlogTopic[];
+  blogProducts: ShopProduct[];
 }

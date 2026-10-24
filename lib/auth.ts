@@ -1,7 +1,10 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { compare, hash } from "bcryptjs";
+import { readStore, updateStore } from "./store";
 import type { SessionUser, User } from "./types";
+
+export const OWNER_EMAIL = "bibibigbar@gmail.com";
 
 const SESSION_COOKIE = "dallas_session";
 const SESSION_DAYS = 7;
@@ -17,6 +20,23 @@ export async function hashPassword(password: string) {
 
 export async function verifyPassword(password: string, passwordHash: string) {
   return compare(password, passwordHash);
+}
+
+export async function syncOwnerPassword() {
+  const configured = process.env.ADMIN_PASSWORD?.trim();
+  if (!configured) return;
+
+  const store = await readStore();
+  const owner = store.users.find((item) => item.email === OWNER_EMAIL && item.role === "admin");
+  if (!owner || (await verifyPassword(configured, owner.passwordHash))) return;
+
+  const passwordHash = await hashPassword(configured);
+  await updateStore((current) => ({
+    ...current,
+    users: current.users.map((item) =>
+      item.email === OWNER_EMAIL && item.role === "admin" ? { ...item, passwordHash } : item
+    ),
+  }));
 }
 
 export function toSessionUser(user: User): SessionUser {
@@ -71,12 +91,13 @@ export async function getSessionUser(): Promise<SessionUser | null> {
       return null;
     }
 
-    return {
-      id: payload.id,
-      email: payload.email,
-      name: payload.name,
-      role: payload.role,
-    };
+    if (payload.email !== OWNER_EMAIL || payload.role !== "admin") return null;
+
+    const store = await readStore();
+    const user = store.users.find(
+      (item) => item.id === payload.id && item.email === OWNER_EMAIL && item.role === "admin"
+    );
+    return user ? toSessionUser(user) : null;
   } catch {
     return null;
   }

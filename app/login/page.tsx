@@ -1,32 +1,30 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
 import { loginAction } from "@/lib/actions/auth";
 import { getCurrentUser } from "@/lib/queries";
+import { safeNextPath } from "@/lib/utils";
 
 export const metadata = { title: "Log in" };
 
-export default async function LoginPage() {
+interface LoginPageProps {
+  searchParams: Promise<{ next?: string }>;
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const { next } = await searchParams;
+  const nextPath = safeNextPath(next || "");
   const user = await getCurrentUser();
-  if (user) redirect(user.role === "admin" ? "/admin" : "/my");
+  if (user) redirect(nextPath || (user.role === "admin" ? "/admin" : "/my"));
 
   return (
     <>
       <AuthForm
         action={loginAction}
         title="Welcome back"
-        subtitle="Log in to write posts and join the Dallas conversation."
+        subtitle="Sign in with the site owner account."
         submitLabel="Log in"
+        nextPath={nextPath}
       />
-      <p className="pb-12 text-center text-sm text-[var(--muted)]">
-        Demo accounts: admin@dallas.local / admin1234 · user@dallas.local / user1234
-      </p>
-      <p className="-mt-8 pb-12 text-center text-sm text-[var(--muted)]">
-        No account yet?{" "}
-        <Link href="/register" className="font-semibold text-[var(--sky-mid)]">
-          Join here
-        </Link>
-      </p>
     </>
   );
 }

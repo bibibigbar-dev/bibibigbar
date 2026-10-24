@@ -1,61 +1,31 @@
 "use server";
 
-import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import {
+  OWNER_EMAIL,
   clearSession,
   createSession,
-  hashPassword,
+  syncOwnerPassword,
   toSessionUser,
   verifyPassword,
 } from "@/lib/auth";
-import { updateStore, readStore } from "@/lib/store";
+import { readStore } from "@/lib/store";
+import { safeNextPath } from "@/lib/utils";
 
-export async function registerAction(formData: FormData) {
-  const name = String(formData.get("name") || "").trim();
+export async function loginAction(_previous: { error?: string }, formData: FormData) {
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const password = String(formData.get("password") || "");
 
-  if (!name || !email || password.length < 6) {
-    return { error: "Name, email, and a password of at least 6 characters are required." };
-  }
-
+  await syncOwnerPassword();
   const store = await readStore();
-  if (store.users.some((user) => user.email === email)) {
-    return { error: "An account with this email already exists." };
-  }
-
-  const passwordHash = await hashPassword(password);
-  const user = {
-    id: `user-${randomUUID()}`,
-    email,
-    name,
-    passwordHash,
-    role: "user" as const,
-    createdAt: new Date().toISOString(),
-  };
-
-  await updateStore((current) => ({
-    ...current,
-    users: [...current.users, user],
-  }));
-
-  await createSession(toSessionUser(user));
-  redirect("/my");
-}
-
-export async function loginAction(formData: FormData) {
-  const email = String(formData.get("email") || "").trim().toLowerCase();
-  const password = String(formData.get("password") || "");
-
-  const store = await readStore();
-  const user = store.users.find((item) => item.email === email);
-  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+  const user = store.users.find((item) => item.email === OWNER_EMAIL && item.role === "admin");
+  if (email !== OWNER_EMAIL || !user || !(await verifyPassword(password, user.passwordHash))) {
     return { error: "Invalid email or password." };
   }
 
   await createSession(toSessionUser(user));
-  redirect(user.role === "admin" ? "/admin" : "/my");
+  const nextPath = safeNextPath(String(formData.get("next") || ""));
+  redirect(nextPath || (user.role === "admin" ? "/admin" : "/my"));
 }
 
 export async function logoutAction() {

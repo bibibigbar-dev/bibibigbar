@@ -7,26 +7,59 @@ const DATA_DIR = path.join(process.cwd(), "data");
 const STORE_PATH = path.join(DATA_DIR, "store.json");
 
 let writeQueue: Promise<void> = Promise.resolve();
+let memoryStore: AppStore | null = null;
+
+function isReadOnlyError(error: unknown) {
+  const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+  return code === "EROFS" || code === "EACCES" || code === "EPERM" || code === "ENOENT";
+}
 
 async function ensureStoreFile(): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
+  if (memoryStore) return;
   try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
     await fs.access(STORE_PATH);
-  } catch {
+  } catch (error) {
     const seed = createSeedStore();
-    await fs.writeFile(STORE_PATH, JSON.stringify(seed, null, 2), "utf8");
+    try {
+      await fs.mkdir(DATA_DIR, { recursive: true });
+      await fs.writeFile(STORE_PATH, JSON.stringify(seed, null, 2), "utf8");
+    } catch (writeError) {
+      if (!isReadOnlyError(writeError) && !isReadOnlyError(error)) throw writeError;
+      memoryStore = seed;
+    }
   }
+}
+
+function normalizeStore(store: AppStore): AppStore {
+  return {
+    ...store,
+    blogPosts: Array.isArray(store.blogPosts) ? store.blogPosts : [],
+    blogTopics: Array.isArray(store.blogTopics) ? store.blogTopics : [],
+    blogProducts: Array.isArray(store.blogProducts) ? store.blogProducts : [],
+  };
 }
 
 export async function readStore(): Promise<AppStore> {
   await ensureStoreFile();
+  if (memoryStore) return normalizeStore(memoryStore);
   const raw = await fs.readFile(STORE_PATH, "utf8");
-  return JSON.parse(raw) as AppStore;
+  return normalizeStore(JSON.parse(raw) as AppStore);
 }
 
 export async function writeStore(store: AppStore): Promise<void> {
   await ensureStoreFile();
-  await fs.writeFile(STORE_PATH, JSON.stringify(store, null, 2), "utf8");
+  const next = normalizeStore(store);
+  if (memoryStore) {
+    memoryStore = next;
+    return;
+  }
+  try {
+    await fs.writeFile(STORE_PATH, JSON.stringify(next, null, 2), "utf8");
+  } catch (error) {
+    if (!isReadOnlyError(error)) throw error;
+    memoryStore = next;
+  }
 }
 
 export async function updateStore(

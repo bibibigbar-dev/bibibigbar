@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { hashSync } from "bcryptjs";
 import type { AppStore } from "./types";
 
@@ -8,18 +9,10 @@ export function createSeedStore(): AppStore {
     users: [
       {
         id: "user-admin",
-        email: "admin@dallas.local",
-        name: "Site Admin",
-        passwordHash: hashSync("admin1234", 10),
+        email: "bibibigbar@gmail.com",
+        name: "bibibigbar",
+        passwordHash: hashSync(process.env.ADMIN_PASSWORD || randomBytes(24).toString("base64url"), 10),
         role: "admin",
-        createdAt: now,
-      },
-      {
-        id: "user-demo",
-        email: "user@dallas.local",
-        name: "Dallas Neighbor",
-        passwordHash: hashSync("user1234", 10),
-        role: "user",
         createdAt: now,
       },
     ],
@@ -104,7 +97,7 @@ export function createSeedStore(): AppStore {
       {
         id: "post-housing",
         boardId: "board-housing",
-        authorId: "user-demo",
+        authorId: "user-admin",
         title: "Good starter neighborhoods near Plano?",
         content:
           "Moving next month for work. Looking for quiet apartments with easy highway access. Any recommendations?",
@@ -116,7 +109,7 @@ export function createSeedStore(): AppStore {
       {
         id: "post-food",
         boardId: "board-food",
-        authorId: "user-demo",
+        authorId: "user-admin",
         title: "Best Korean BBQ for a weekend hangout",
         content:
           "Trying to find a spot that is not too crowded on Saturday evenings. Open to Carrollton or Richardson.",
@@ -136,5 +129,8 @@ export function createSeedStore(): AppStore {
         createdAt: now,
       },
     ],
+    blogPosts: [],
+    blogTopics: [],
+    blogProducts: [],
   };
 }

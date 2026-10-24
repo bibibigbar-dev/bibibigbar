@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { blogMenuHref } from "@/lib/blog/config";
 
 export function SiteFooter() {
   return (
@@ -11,9 +12,11 @@ export function SiteFooter() {
           </p>
         </div>
         <div className="flex shrink-0 gap-4 whitespace-nowrap text-sm font-semibold text-[var(--muted)]">
-          <Link href="/#program">프로그램</Link>
-          <Link href="/boards">이야기</Link>
-          <Link href="/login">로그인</Link>
+          <Link href="/#program">Program</Link>
+          <a href={blogMenuHref()}>Blog</a>
+          <Link href="/shop">Shop</Link>
+          <Link href="/boards">Stories</Link>
+          <Link href="/login">Log in</Link>
         </div>
       </div>
       <div className="container footer-bottom"><span>© {new Date().getFullYear()} BIBIBIGBAR</span><span>MADE WITH CURIOSITY & A LITTLE CHAOS <span aria-hidden="true">✦</span></span><a href="#main-content">BACK TO TOP ↑</a></div>

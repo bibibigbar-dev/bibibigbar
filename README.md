@@ -10,14 +10,11 @@ A personal website styled as a vintage circus: a cream-and-vermilion playbill, a
 - Multiple topic boards (Free Talk, Living Tips, Housing, Food, Jobs, Marketplace, Q&A)
 - Member area (`/my`) for writing and managing your own posts
 - Admin console (`/admin`) for boards, moderation, and user roles
-- Cookie-based auth with demo accounts
+- Cookie-based sign-in for the site owner only
 
-## Demo accounts
+## Account
 
-| Role  | Email               | Password  |
-|-------|---------------------|-----------|
-| Admin | admin@dallas.local  | admin1234 |
-| User  | user@dallas.local   | user1234  |
+Sign-in is limited to `bibibigbar@gmail.com`. Set the password in `.env.local` as `ADMIN_PASSWORD`. There is no public registration.
 
 ## Tech stack
 

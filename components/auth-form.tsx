@@ -1,13 +1,24 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 
 interface AuthFormProps {
-  action: (formData: FormData) => Promise<{ error?: string } | void>;
+  action: (previous: { error?: string }, formData: FormData) => Promise<{ error?: string }>;
   title: string;
   subtitle: string;
   submitLabel: string;
   includeName?: boolean;
+  nextPath?: string;
+}
+
+function SubmitButton({ label }: { label: string }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button type="submit" className="btn btn-primary mt-2 w-full" disabled={pending}>
+      {pending ? "Please wait…" : label}
+    </button>
+  );
 }
 
 export function AuthForm({
@@ -16,29 +27,22 @@ export function AuthForm({
   subtitle,
   submitLabel,
   includeName = false,
+  nextPath = "",
 }: AuthFormProps) {
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-
-  function handleSubmit(formData: FormData) {
-    setError(null);
-    startTransition(async () => {
-      const result = await action(formData);
-      if (result?.error) setError(result.error);
-    });
-  }
+  const [state, formAction] = useFormState(action, {});
 
   return (
     <div className="container py-14">
       <div className="mx-auto max-w-md surface animate-rise rounded-[2rem] p-8 shadow-[var(--shadow)]">
         <p className="display text-3xl font-bold text-[var(--sky-deep)]">{title}</p>
         <p className="mt-2 text-sm text-[var(--muted)]">{subtitle}</p>
-        {error ? (
+        {state.error ? (
           <p className="mt-4 rounded-2xl bg-[rgba(180,35,24,0.08)] px-4 py-3 text-sm text-[#b42318]">
-            {error}
+            {state.error}
           </p>
         ) : null}
-        <form action={handleSubmit} className="mt-6 grid gap-4">
+        <form action={formAction} className="mt-6 grid gap-4">
+          {nextPath ? <input type="hidden" name="next" value={nextPath} /> : null}
           {includeName ? (
             <label className="field">
               <span>Name</span>
@@ -59,9 +63,7 @@ export function AuthForm({
               placeholder="At least 6 characters"
             />
           </label>
-          <button type="submit" className="btn btn-primary mt-2 w-full" disabled={isPending}>
-            {isPending ? "Please wait…" : submitLabel}
-          </button>
+          <SubmitButton label={submitLabel} />
         </form>
       </div>
     </div>

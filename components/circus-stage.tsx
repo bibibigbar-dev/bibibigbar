@@ -10,7 +10,7 @@ export function CircusStage() {
       <div className="stage-caption"><span>THE BIBIBIGBAR CIRCUS</span><span>EST. NOW</span></div>
       <div className="stage-art">
         <svg viewBox="0 0 520 510" role="img" aria-labelledby="circus-title">
-          <title id="circus-title">별과 달 아래 펼쳐진 빨간 줄무늬 서커스 텐트</title>
+          <title id="circus-title">A red-striped circus tent under the stars and moon</title>
           <defs>
             <pattern id="tent-stripes" width="66" height="220" patternUnits="userSpaceOnUse">
               <rect width="66" height="220" fill="#f7ecd2" />
@@ -64,7 +64,7 @@ export function CircusStage() {
       <div className="stage-bottom">
         <span aria-live="polite">{lightsOn ? "THE SHOW IS YOURS. ENJOY!" : "A LITTLE WONDER AWAITS INSIDE"}</span>
         <button type="button" onClick={() => setLightsOn(!lightsOn)} aria-pressed={lightsOn}>
-          <span aria-hidden="true">{lightsOn ? "☀" : "✧"}</span> {lightsOn ? "조명 끄기" : "조명 켜기"}
+          <span aria-hidden="true">{lightsOn ? "☀" : "✧"}</span> {lightsOn ? "Turn lights off" : "Turn lights on"}
         </button>
       </div>
     </div>

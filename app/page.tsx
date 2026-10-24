@@ -4,9 +4,9 @@ import { PostList } from "@/components/post-list";
 import { getActiveBoards, getCurrentUser, getRecentPosts } from "@/lib/queries";
 
 const acts = [
-  { number: "01", symbol: "✳", title: "호기심이 묘기가 되는 곳", english: "A CABINET OF CURIOSITIES", description: "별것 아닌 생각도 일단 무대 위로. 만들고, 부수고, 다시 만들어가는 작은 실험들.", href: "#journal", action: "최근 기록 구경하기", color: "red" },
-  { number: "02", symbol: "✎", title: "일상이라는 줄타기", english: "NOTES FROM THE EVERYDAY", description: "잘하는 날도, 조금 휘청이는 날도. 일상에서 주워 모은 생각과 장면을 기록합니다.", href: "#about", action: "이 공간 알아보기", color: "blue" },
-  { number: "03", symbol: "✦", title: "당신도 출연 환영", english: "THERE’S ROOM FOR YOU", description: "구경만 해도 좋고, 이야기를 남겨도 좋아요. 재미있는 일은 대개 함께 시작되니까.", href: "/boards", action: "이야기 나누러 가기", color: "gold" },
+  { number: "01", symbol: "✳", title: "Where curiosity becomes a trick", english: "A CABINET OF CURIOSITIES", description: "Even a small thought gets a turn on stage. Make it, break it, and make it again.", href: "#journal", action: "See the latest notes", color: "red" },
+  { number: "02", symbol: "✎", title: "Everyday life, on a tightrope", english: "NOTES FROM THE EVERYDAY", description: "The steady days and the wobbly ones. Notes and scenes picked up along the way.", href: "#about", action: "About this place", color: "blue" },
+  { number: "03", symbol: "✦", title: "You are welcome on stage", english: "THERE’S ROOM FOR YOU", description: "Watching is enough. Leaving a story is welcome too. The good bits usually start together.", href: "/boards", action: "Join the boards", color: "gold" },
 ];
 
 export default async function HomePage() {
@@ -29,20 +29,20 @@ export default async function HomePage() {
           <div className="hero-intro">
             <span className="intro-star" aria-hidden="true">✳</span>
             <div>
-              <p className="hero-korean">조금 엉뚱해도, 꽤 근사한 나의 세계.</p>
-              <p className="hero-description">생각을 만들고, 일상을 기록하고, 가끔은 딴짓도 합니다.<br className="hidden sm:block" /> 여기는 bibibigbar의 작은 서커스. 편하게 구경하다 가세요.</p>
+              <p className="hero-korean">A little offbeat. Still a fine little world.</p>
+              <p className="hero-description">I make things, keep notes, and wander off sometimes.<br className="hidden sm:block" /> This is bibibigbar&apos;s small circus. Stay as long as you like.</p>
             </div>
           </div>
           <div className="hero-actions">
-            <Link href="#program" className="btn btn-primary">오늘의 공연 보기 <span aria-hidden="true">↗</span></Link>
-            <Link href="#about" className="text-link">여긴 어떤 곳인가요? <span aria-hidden="true">→</span></Link>
+            <Link href="#program" className="btn btn-primary">See today&apos;s show <span aria-hidden="true">↗</span></Link>
+            <Link href="#about" className="text-link">What is this place? <span aria-hidden="true">→</span></Link>
           </div>
           <p className="hero-footnote">NO PERFECT TRICKS. JUST A WORK IN PROGRESS.</p>
         </div>
         <CircusStage />
       </section>
 
-      <div className="show-ribbon" aria-label="호기심, 작은 실험, 일상의 기록, 뜻밖의 즐거움">
+      <div className="show-ribbon" aria-label="Curiosity, small experiments, everyday notes, and the odd delight">
         <div aria-hidden="true">
           <span>STAY CURIOUS</span><b>✦</b><span>MAKE A LITTLE MAGIC</span><b>✦</b><span>ENJOY THE LITTLE THINGS</span><b>✦</b><span>STAY CURIOUS</span><b>✦</b><span>MAKE A LITTLE MAGIC</span><b>✦</b>
         </div>
@@ -50,8 +50,8 @@ export default async function HomePage() {
 
       <section id="program" className="container program-section">
         <div className="section-heading">
-          <div><p className="eyebrow">STEP RIGHT UP</p><h2 className="section-title">오늘의 프로그램<span>✦</span></h2></div>
-          <p className="section-note">거창하진 않아도, 지루하진 않을 거예요.</p>
+          <div><p className="eyebrow">STEP RIGHT UP</p><h2 className="section-title">Today&apos;s program<span>✦</span></h2></div>
+          <p className="section-note">Nothing grand. Nothing dull.</p>
         </div>
         <div className="program-grid">
           {acts.map((act) => (
@@ -71,8 +71,8 @@ export default async function HomePage() {
         <div className="about-emblem" aria-hidden="true"><span>THE HUMAN<br />BEHIND THE SHOW</span><b>b.</b><span>STILL FIGURING IT OUT</span></div>
         <div className="about-copy">
           <p className="eyebrow">A NOTE FROM THE RINGMASTER</p>
-          <h2>인생은 실전이라지만,<br />여기서는 <em>리허설 중.</em></h2>
-          <p>안녕하세요, bibibigbar입니다. 이곳은 완성된 정답을 전시하는 포트폴리오보다, 좋아하는 것과 궁금한 것을 하나씩 펼쳐 놓는 저만의 무대예요. 조금 서툴러도 재미있게, 제 속도로 만들어갑니다.</p>
+          <h2>Life is live, but here<br />we are still <em>in rehearsal.</em></h2>
+          <p>Hello, I&apos;m bibibigbar. This is less a finished portfolio and more a stage for the things I like and the things I&apos;m curious about. A little clumsy is fine. I make it at my own pace.</p>
           <span className="about-signature">Enjoy the show, bibibigbar <span aria-hidden="true">↗</span></span>
         </div>
         <span className="about-spark" aria-hidden="true">✧</span>
@@ -80,10 +80,10 @@ export default async function HomePage() {
 
       <section id="journal" className="container journal-section">
         <div className="section-heading">
-          <div><p className="eyebrow">FRESH FROM BACKSTAGE</p><h2 className="section-title">무대 뒤의 이야기<span>✎</span></h2></div>
-          <Link href="/boards" className="text-link">모든 이야기 <span aria-hidden="true">↗</span></Link>
+          <div><p className="eyebrow">FRESH FROM BACKSTAGE</p><h2 className="section-title">Notes from backstage<span>✎</span></h2></div>
+          <Link href="/boards" className="text-link">All stories <span aria-hidden="true">↗</span></Link>
         </div>
-        <PostList posts={posts} showBoard emptyMessage="아직은 조용한 무대 뒤. 첫 번째 이야기를 남겨주세요." />
+        <PostList posts={posts} showBoard emptyMessage="The backstage is quiet for now. Leave the first story." />
         <div className="board-directory">
           <span className="eyebrow">EXPLORE THE TENT</span>
           <div>{boards.map((board) => <Link key={board.id} href={`/boards/${board.slug}`}>{board.name} <span aria-hidden="true">↗</span></Link>)}</div>
@@ -92,8 +92,8 @@ export default async function HomePage() {
 
       <section className="container invitation-section">
         <div className="invitation">
-          <div><p className="eyebrow">ONE MORE THING BEFORE YOU GO</p><h2>좋은 구경엔, 좋은 대화가 따라오죠.</h2><p>당신의 이야기도 이 무대의 일부가 될 수 있어요.</p></div>
-          <Link href={user ? "/my" : "/register"} className="btn btn-primary">{user ? "이야기 남기기" : "함께 이야기하기"} <span aria-hidden="true">↗</span></Link>
+          <div><p className="eyebrow">ONE MORE THING BEFORE YOU GO</p><h2>A good show is better with a good conversation.</h2><p>Your story can be part of this stage.</p></div>
+          <Link href={user ? "/my" : "/login"} className="btn btn-primary">{user ? "Leave a story" : "Come in"} <span aria-hidden="true">↗</span></Link>
           <span className="ticket-stub" aria-hidden="true">ADMIT<br /><b>YOU</b><span>NO. 0001</span></span>
         </div>
       </section>

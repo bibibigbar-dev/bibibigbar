@@ -22,6 +22,12 @@ export function excerpt(text: string, max = 120) {
   return `${normalized.slice(0, max).trim()}…`;
 }
 
+export function safeNextPath(value: string) {
+  if (!value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return "";
+  if (value.includes("://") || value.includes("\\")) return "";
+  return value;
+}
+
 export function slugify(input: string) {
   return input
     .toLowerCase()
