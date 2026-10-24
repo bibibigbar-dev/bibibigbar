@@ -31,8 +31,7 @@ export default async function TopicQueuePage({ searchParams }: TopicQueuePagePro
         <div>
           <h1 className="display text-4xl font-bold text-[var(--sky-deep)]">Topic queue</h1>
           <p className="mt-3 max-w-2xl text-[var(--muted)]">
-            The 5:00 KST job writes five English briefings and schedules them for 6:00, 9:00, 12:00, 15:00, and 18:00
-            so you can review them first. The button below writes the next manual topic as a
+            Once a day at 5:00 KST, the job publishes briefings that are already due and writes five English briefings for you to review. The button below writes the next manual topic as a
             {isAutoPublishEnabled() ? " published post." : " draft."}
           </p>
         </div>

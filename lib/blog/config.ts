@@ -83,7 +83,7 @@ export function blogSetupChecks(): SetupCheck[] {
     {
       label: "Daily edition",
       ready: Boolean(process.env.CRON_SECRET),
-      detail: "5:00 KST writes five English briefings and schedules them for 6:00, 9:00, 12:00, 15:00, and 18:00 KST.",
+      detail: "5:00 KST publishes due briefings and writes five English briefings for review.",
     },
     {
       label: "Cron secret",

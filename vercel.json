@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/blog/auto-publish",
-      "schedule": "0 0,3,6,9,20,21 * * *"
+      "schedule": "0 20 * * *"
     }
   ]
 }
