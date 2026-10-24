@@ -51,7 +51,7 @@ export function AuthForm({
           ) : null}
           <label className="field">
             <span>Email</span>
-            <input name="email" type="email" required placeholder="you@email.com" />
+            <input name="email" type="email" required placeholder="bibibigbar@gmail.com" />
           </label>
           <label className="field">
             <span>Password</span>

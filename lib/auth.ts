@@ -93,11 +93,12 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 
     if (payload.email !== OWNER_EMAIL || payload.role !== "admin") return null;
 
-    const store = await readStore();
-    const user = store.users.find(
-      (item) => item.id === payload.id && item.email === OWNER_EMAIL && item.role === "admin"
-    );
-    return user ? toSessionUser(user) : null;
+    return {
+      id: payload.id,
+      email: OWNER_EMAIL,
+      name: payload.name,
+      role: "admin",
+    };
   } catch {
     return null;
   }
