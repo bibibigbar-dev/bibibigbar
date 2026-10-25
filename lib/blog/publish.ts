@@ -201,7 +201,7 @@ export async function runDailyEdition(now = new Date()): Promise<EditionReport> 
   await markLiveTopics();
   if (promoted) revalidateBlog();
 
-  const hours = publishing ? PUBLISH_HOURS.filter((hour) => hour > clock.hour) : [...PUBLISH_HOURS];
+  const hours = publishing ? PUBLISH_HOURS.filter((hour) => hour >= clock.hour) : [...PUBLISH_HOURS];
   if (hours.length) {
     report.gathered = await ensureDailyBriefs(clock.dateKey, hours);
     report.error = await scheduleEditionHours(clock.dateKey, hours, report);
@@ -226,11 +226,13 @@ async function scheduleEditionHours(dateKey: string, hours: number[], report: Ed
     try {
       await generateTopicIntoPost(topic.id, "schedule", seoulSlotIso(dateKey, hour));
       report.scheduled += 1;
+      return undefined;
     } catch (error) {
       errors.push(error instanceof Error ? error.message : "Failed to schedule a briefing.");
+      return errors.join(" ");
     }
   }
-  return errors.join(" ") || undefined;
+  return undefined;
 }
 
 async function markLiveTopics() {

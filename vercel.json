@@ -1,9 +1,3 @@
 {
-  "framework": "nextjs",
-  "crons": [
-    {
-      "path": "/api/blog/auto-publish",
-      "schedule": "0 20 * * *"
-    }
-  ]
+  "framework": "nextjs"
 }

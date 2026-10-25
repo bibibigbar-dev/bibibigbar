@@ -1,0 +1,34 @@
+name: Blog edition
+
+on:
+  schedule:
+    # Asia/Seoul is UTC+9. GitHub schedules use UTC.
+    - cron: "0 20 * * *"
+    - cron: "0 21 * * *"
+    - cron: "0 0 * * *"
+    - cron: "0 3 * * *"
+    - cron: "0 6 * * *"
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  edition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Call the edition endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "Add CRON_SECRET to the repository Actions secrets."
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error --max-time 300 \
+            --request POST \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            --output "$RUNNER_TEMP/edition.json" \
+            --write-out "HTTP %{http_code}\n" \
+            "https://bibibigbar.com/api/blog/auto-publish"
+          cat "$RUNNER_TEMP/edition.json"
+          echo
