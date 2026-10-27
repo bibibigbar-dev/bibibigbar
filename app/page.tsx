@@ -61,7 +61,7 @@ export default function HomePage() {
             <span className="home-door-index">{door.index}</span>
             <span className="home-door-title">{door.title}</span>
             <span className="home-door-copy">{door.copy}</span>
-            <span className="home-door-soon">{door.soon ? "Soon" : <span className="line-arrow">↗️</span>}</span>
+            {door.soon ? <span className="home-door-soon">Soon</span> : null}
           </>
         );
         if (door.external) {
