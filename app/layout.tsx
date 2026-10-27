@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/react";
 import { SiteHeader } from "@/components/site-header";
@@ -18,13 +17,14 @@ function AdSenseScript() {
   if (!client) return null;
 
   return (
-    <Script
-      id="adsense"
-      async
-      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
-      crossOrigin="anonymous"
-      strategy="afterInteractive"
-    />
+    <>
+      <meta name="google-adsense-account" content={client} />
+      <script
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
+        crossOrigin="anonymous"
+      />
+    </>
   );
 }
 
@@ -46,13 +46,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const headerStore = await headers();
+  const isJournalHost = headerStore.get("x-bibibig-blog-mount") === "subdomain";
   if (headerStore.get("x-bibibig-site") === "blog") {
     return (
       <html lang="en">
+        {isJournalHost ? (
+          <head>
+            <AdSenseScript />
+          </head>
+        ) : null}
         <body className="font-sans antialiased">
           <EditorFonts />
           {children}
-          <AdSenseScript />
           <Analytics />
         </body>
       </html>
@@ -69,7 +74,6 @@ export default async function RootLayout({
         <SiteHeader user={user} boards={boards} />
         <main id="main-content" className="min-h-[70vh]">{children}</main>
         <SiteFooter />
-        <AdSenseScript />
         <Analytics />
       </body>
     </html>

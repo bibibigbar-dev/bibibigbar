@@ -4,7 +4,7 @@ import { AdSlot } from "@/components/blog/ad-slot";
 import { PostCard } from "@/components/blog/post-card";
 import { adsenseClient, adsenseSlot, blogOrigin } from "@/lib/blog/config";
 import { getBlogRepository } from "@/lib/blog";
-import { blogPath } from "@/lib/blog/paths";
+import { blogPath, getBlogMount } from "@/lib/blog/paths";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +31,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
   const repository = getBlogRepository();
   const published = await repository.listPublished();
   const home = await blogPath();
+  const showAds = (await getBlogMount()) === "subdomain";
   const activeTag = tag.trim();
   const activeDestination = destination.trim();
   const filtered = published.filter((post) => {
@@ -102,7 +103,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
           {visible.map((post, index) => (
             <div key={post.id} className="contents">
               <PostCard post={post} href={post.slug ? `${home === "/" ? "" : home}/${post.slug}` : home} />
-              {index === 2 ? <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} /> : null}
+              {showAds && index === 2 ? <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} /> : null}
             </div>
           ))}
         </div>

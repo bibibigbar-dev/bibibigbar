@@ -76,7 +76,8 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
     if (!wantsPreview || user?.role !== "admin") notFound();
   }
 
-  const [home, published] = await Promise.all([blogPath(), repository.listPublished()]);
+  const [home, published, mount] = await Promise.all([blogPath(), repository.listPublished(), getBlogMount()]);
+  const showAds = mount === "subdomain";
   const hrefFor = async (item: BlogPost) => {
     const path = await blogPath(item.slug);
     return path;
@@ -130,7 +131,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
         // eslint-disable-next-line @next/next/no-img-element
         <img src={post.coverImageUrl} alt={post.title} className="blog-cover" />
       ) : null}
-      <AdSlot client={adsenseClient()} slot={adsenseSlot("article")} />
+      {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("article")} /> : null}
       <div className="blog-prose blog-article" dangerouslySetInnerHTML={{ __html: post.content }} />
       {tagHrefs.length ? (
         <div className="mt-8 flex flex-wrap gap-2">
@@ -141,7 +142,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
           ))}
         </div>
       ) : null}
-      <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} />
+      {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} /> : null}
       {related.length ? (
         <section className="mt-14">
           <h2 className="display text-3xl font-bold text-[var(--sky-deep)]">Keep reading</h2>
