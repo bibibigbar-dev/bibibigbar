@@ -9,7 +9,9 @@ export default function AboutPage() {
   return (
     <div className="container page-hero">
       <p className="page-kicker">About</p>
-      <h1>Hello.</h1>
+      <h1>
+        Hell<span className="title-mark">o</span>.
+      </h1>
       <p className="mt-8 max-w-2xl text-xl leading-relaxed">
         I&apos;m bibibigbar, a developer and maker based in Dallas. I build apps and websites, write about everyday life, and run a small shop.
       </p>

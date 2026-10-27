@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { blogMenuHref, shopMenuHref } from "@/lib/blog/config";
 
-const ticker = ["BLOG", "SHOP", "WORK", "ABOUT", "ADMIN"];
+const ticker =
+  "I have a dream. There was a dream higher than the sky. I want to know. Can't you just give me the confidence to push ahead my own way?";
 
 const doors = [
   {
@@ -36,14 +37,14 @@ const doors = [
 ];
 
 export default function HomePage() {
-  const loop = [...ticker, ...ticker];
+  const loop = [ticker, ticker];
 
   return (
     <div>
       <h1 className="home-hero">
         Hi, I&apos;m
         <br />
-        bibibigbar.
+        bibibi<span className="title-mark">g</span>bar.
         <br />
         I make things.
       </h1>

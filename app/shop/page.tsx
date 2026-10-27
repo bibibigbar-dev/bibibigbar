@@ -26,7 +26,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   return (
     <div>
       <div className="blog-index-hero">
-        <h1 className="blog-index-title">Shop</h1>
+        <h1 className="blog-index-title">
+          S<span className="title-mark">h</span>op
+        </h1>
         <div className="blog-index-aside">
           <span>Travel gear, linked to Amazon</span>
           <span className="blog-index-count">

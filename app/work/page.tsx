@@ -15,7 +15,9 @@ export default function WorkPage() {
   return (
     <div className="container page-hero">
       <p className="page-kicker">Work · soon</p>
-      <h1>Apps and websites.</h1>
+      <h1>
+        Apps and <span className="title-mark">w</span>ebsites.
+      </h1>
       <p className="mt-8 max-w-2xl text-xl leading-relaxed">
         The project list is not ready yet. This page will hold the things I have built.
       </p>

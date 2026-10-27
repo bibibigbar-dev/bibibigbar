@@ -91,7 +91,9 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
     <div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="blog-index-hero">
-        <h1 className="blog-index-title">Blog</h1>
+        <h1 className="blog-index-title">
+          Bl<span className="title-mark">o</span>g
+        </h1>
         <div className="blog-index-aside">
           <span>Notes from the everyday</span>
           <span className="blog-index-count">
