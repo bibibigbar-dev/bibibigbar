@@ -627,12 +627,25 @@ select {
 }
 
 .blog-toolbar {
+  position: sticky;
+  top: 0.75rem;
+  z-index: 30;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-top: 1rem;
+  padding: 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem 1rem 0 0;
+  background: #fff;
 }
 
+.blog-toolbar select {
+  max-width: 9.5rem;
+  color: var(--ink);
+}
+
+.blog-toolbar select,
 .blog-toolbar button {
   min-height: 2.1rem;
   border: 1px solid var(--line);
@@ -644,9 +657,10 @@ select {
 }
 
 .blog-editor {
-  margin-top: 0.8rem;
+  margin-top: 0;
   border: 1px solid var(--line);
-  border-radius: 1rem;
+  border-top: 0;
+  border-radius: 0 0 1rem 1rem;
   background: white;
 }
 

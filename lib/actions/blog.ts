@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/utils";
-import { blogAuthorName } from "@/lib/blog/config";
+import { blogAuthorName, isSupabaseConfigured } from "@/lib/blog/config";
 import { excerptFrom, plainText, readingMinutes, sanitizePostHtml } from "@/lib/blog/html";
 import { storeBlogImage } from "@/lib/blog/images";
 import { getBlogRepository } from "@/lib/blog";
@@ -22,7 +22,11 @@ function asStatus(value: string): BlogPostStatus {
   return "draft";
 }
 
-export async function saveBlogPostAction(formData: FormData): Promise<{ error?: string } | void> {
+export async function saveBlogPostAction(formData: FormData): Promise<{ error?: string; id?: string }> {
+  if (process.env.NODE_ENV === "production" && !isSupabaseConfigured()) {
+    return { error: "The blog database is not connected on this server." };
+  }
+
   const user = await requireAdmin();
   const repository = getBlogRepository();
   const id = String(formData.get("id") || "");
@@ -84,10 +88,16 @@ export async function saveBlogPostAction(formData: FormData): Promise<{ error?: 
     updatedAt: now,
   };
 
-  await repository.savePost(post);
+  try {
+    await repository.savePost(post);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Could not save the post.";
+    return { error: message };
+  }
+
   revalidateBlog(existing?.slug);
   revalidateBlog(post.slug);
-  redirect(`/admin/blog/${post.id}?saved=1`);
+  return { id: post.id };
 }
 
 export async function deleteBlogPostAction(formData: FormData) {

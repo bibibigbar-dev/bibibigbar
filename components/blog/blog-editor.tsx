@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition, type ChangeEvent } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import LinkExtension from "@tiptap/extension-link";
 import ImageExtension from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import TextStyle from "@tiptap/extension-text-style";
+import FontFamily from "@tiptap/extension-font-family";
+import { editorFonts } from "@/lib/blog/fonts";
 import { deleteBlogPostAction, saveBlogPostAction, uploadBlogImageAction } from "@/lib/actions/blog";
 import { toDatetimeLocalValue } from "@/lib/blog/slug";
 import type { BlogPost } from "@/lib/blog/types";
@@ -23,7 +27,9 @@ interface BlogEditorProps {
 }
 
 export function BlogEditor({ post, saved = false }: BlogEditorProps) {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [activeFont, setActiveFont] = useState("");
   const [html, setHtml] = useState(post?.content || "<p></p>");
   const [coverImageUrl, setCoverImageUrl] = useState(post?.coverImageUrl || "");
   const [isUploading, setIsUploading] = useState(false);
@@ -34,6 +40,8 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
     immediatelyRender: false,
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
+      TextStyle,
+      FontFamily.configure({ types: ["textStyle"] }),
       LinkExtension.configure({ openOnClick: false, autolink: true }),
       ImageExtension.configure({ allowBase64: false }),
       Placeholder.configure({
@@ -61,7 +69,13 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
         return true;
       },
     },
-    onUpdate: ({ editor: current }) => setHtml(current.getHTML()),
+    onUpdate: ({ editor: current }) => {
+      setHtml(current.getHTML());
+      setActiveFont((current.getAttributes("textStyle").fontFamily as string | undefined) || "");
+    },
+    onSelectionUpdate: ({ editor: current }) => {
+      setActiveFont((current.getAttributes("textStyle").fontFamily as string | undefined) || "");
+    },
   });
 
   uploadRef.current = async (files, position) => {
@@ -74,7 +88,11 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
     setError(null);
     startTransition(async () => {
       const result = await saveBlogPostAction(formData);
-      if (result?.error) setError(result.error);
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+      if (result?.id) router.push(`/admin/blog/${result.id}?saved=1`);
     });
   }
 
@@ -137,7 +155,31 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
             <span>Title</span>
             <input name="title" defaultValue={post?.title || ""} required placeholder="A slow weekend in Jeonju" />
           </label>
+          <p className="mt-2 text-xs text-[var(--muted)]">
+            Put the cursor in the paragraph, then upload a JPG, PNG, WebP, or GIF. You can also paste or drop a photo there.
+          </p>
           <div className="blog-toolbar" role="toolbar" aria-label="Formatting">
+            <select
+              aria-label="Font"
+              value={activeFont}
+              disabled={!editor}
+              style={{ fontFamily: activeFont || undefined }}
+              onChange={(event) => {
+                if (!editor) return;
+                const family = event.target.value;
+                const chain = editor.chain().focus();
+                if (!family) chain.unsetFontFamily().run();
+                else chain.setFontFamily(family).run();
+                setActiveFont(family);
+              }}
+            >
+              <option value="">Default</option>
+              {editorFonts.map((font) => (
+                <option key={font.family} value={font.family} style={{ fontFamily: font.family }}>
+                  {font.label}
+                </option>
+              ))}
+            </select>
             <button type="button" onClick={() => editor?.chain().focus().toggleBold().run()} disabled={!editor}>
               Bold
             </button>
@@ -174,9 +216,6 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
             className="sr-only"
             onChange={onInlineFiles}
           />
-          <p className="mt-2 text-xs text-[var(--muted)]">
-            Put the cursor in the paragraph, then upload a JPG, PNG, WebP, or GIF. You can also paste or drop a photo there.
-          </p>
           <div className="blog-editor">
             <EditorContent editor={editor} />
           </div>

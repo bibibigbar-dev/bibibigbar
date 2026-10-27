@@ -1,4 +1,5 @@
 import sanitizeHtml from "sanitize-html";
+import { editorFontFamilyPatterns } from "./fonts";
 
 const options: sanitizeHtml.IOptions = {
   allowedTags: [
@@ -15,10 +16,17 @@ const options: sanitizeHtml.IOptions = {
     "blockquote",
     "img",
     "hr",
+    "span",
   ],
   allowedAttributes: {
     a: ["href", "title", "rel", "target"],
     img: ["src", "alt", "title"],
+    span: ["style"],
+  },
+  allowedStyles: {
+    span: {
+      "font-family": editorFontFamilyPatterns,
+    },
   },
   allowedSchemes: ["http", "https", "mailto"],
   transformTags: {

@@ -5,8 +5,13 @@ import { Analytics } from "@vercel/analytics/react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { adsenseClient } from "@/lib/blog/config";
+import { editorFontStylesheet } from "@/lib/blog/fonts";
 import { getCurrentUser, getActiveBoards } from "@/lib/queries";
 import "./globals.css";
+
+function EditorFonts() {
+  return <link rel="stylesheet" href={editorFontStylesheet} />;
+}
 
 function AdSenseScript() {
   const client = adsenseClient();
@@ -45,6 +50,7 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body className="font-sans antialiased">
+          <EditorFonts />
           {children}
           <AdSenseScript />
           <Analytics />
@@ -58,6 +64,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
+        <EditorFonts />
         <a href="#main-content" className="skip-link">Skip to content</a>
         <SiteHeader user={user} boards={boards} />
         <main id="main-content" className="min-h-[70vh]">{children}</main>
