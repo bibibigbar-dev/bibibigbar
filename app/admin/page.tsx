@@ -1,8 +1,9 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
 import { AdminNav } from "@/components/admin-nav";
+import { AdminRecent } from "@/components/admin-recent";
 import { getBlogRepository } from "@/lib/blog";
-import { getAdminStats, getCurrentUser, getRecentPosts } from "@/lib/queries";
+import { getCurrentUser } from "@/lib/queries";
+import { formatDateTime } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 export const metadata = { title: "Admin" };
 
@@ -13,83 +14,50 @@ export default async function AdminPage() {
 
   const repository = getBlogRepository();
   await repository.promoteScheduled();
-  const [stats, recent, journal] = await Promise.all([
-    getAdminStats(),
-    getRecentPosts(5),
-    repository.listPosts(),
-  ]);
-  const publishedJournal = journal.filter((post) => post.status === "published").length;
+  const [journal, products] = await Promise.all([repository.listPosts(), repository.listProducts()]);
+  const recentPosts = [...journal]
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .map((post) => ({
+      id: post.id,
+      title: post.title,
+      status: post.status,
+      updatedAt: formatDateTime(post.updatedAt),
+    }));
+  const recentProducts = [...products]
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .map((product) => ({
+      id: product.id,
+      name: product.name,
+      priceLabel: product.priceLabel,
+      isVisible: product.isVisible,
+    }));
+  const counts = [
+    { label: "Published", value: journal.filter((post) => post.status === "published").length },
+    { label: "Drafts", value: journal.filter((post) => post.status === "draft").length },
+    { label: "Scheduled", value: journal.filter((post) => post.status === "scheduled").length },
+    { label: "Shop", value: products.length },
+  ];
 
   return (
     <div className="container py-12">
-      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sunset)]">
-        Admin console
-      </p>
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sunset)]">Admin console</p>
       <h1 className="display mt-2 text-4xl font-bold text-[var(--sky-deep)]">Dashboard</h1>
-      <p className="mt-3 max-w-2xl text-[var(--muted)]">
-        Manage boards, moderate posts, and publish the travel journal. Writing stays on this admin site. Readers see posts on the blog.
-      </p>
+      <p className="mt-3 max-w-2xl text-[var(--muted)]">Recent blog posts and shop products.</p>
 
       <div className="mt-8">
         <AdminNav current="overview" />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          { label: "Users", value: stats.users },
-          { label: "Boards", value: stats.boards },
-          { label: "Posts", value: stats.posts },
-          { label: "Hidden posts", value: stats.hiddenPosts },
-          { label: "Journal posts", value: journal.length },
-          { label: "Published stories", value: publishedJournal },
-        ].map((item) => (
-          <div key={item.label} className="surface rounded-[1.5rem] p-5">
-            <p className="text-sm text-[var(--muted)]">{item.label}</p>
-            <p className="mt-2 text-3xl font-bold text-[var(--sky-deep)]">{item.value}</p>
+      <div className="admin-stats">
+        {counts.map((item) => (
+          <div key={item.label} className="admin-stat">
+            <p>{item.label}</p>
+            <strong>{item.value}</strong>
           </div>
         ))}
       </div>
 
-      <section className="mt-10">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="display text-2xl font-bold text-[var(--sky-deep)]">Recent posts</h2>
-          <div className="flex gap-2">
-            <Link href="/admin/blog" className="btn btn-primary">
-              Open journal
-            </Link>
-            <Link href="/admin/posts" className="btn btn-secondary">
-              Moderate all
-            </Link>
-          </div>
-        </div>
-        <div className="surface overflow-x-auto rounded-[1.5rem]">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Board</th>
-                <th>Author</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recent.map((post) => (
-                <tr key={post.id}>
-                  <td>
-                    <Link
-                      href={`/boards/${post.board.slug}/${post.id}`}
-                      className="font-semibold text-[var(--sky-deep)]"
-                    >
-                      {post.title}
-                    </Link>
-                  </td>
-                  <td>{post.board.name}</td>
-                  <td>{post.author.name}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <AdminRecent posts={recentPosts} products={recentProducts} />
     </div>
   );
 }

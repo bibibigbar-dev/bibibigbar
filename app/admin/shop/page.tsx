@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { AdminNav } from "@/components/admin-nav";
-import { ShopProductForm } from "@/components/shop/shop-product-form";
+import { AdminShopStudio } from "@/components/admin-shop-studio";
 import { requireAdminPage } from "@/lib/blog/guard";
 import { getBlogRepository } from "@/lib/blog";
 
@@ -22,44 +21,21 @@ export default async function AdminShopPage({ searchParams }: AdminShopPageProps
       <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sunset)]">Admin</p>
       <h1 className="display mt-2 text-4xl font-bold text-[var(--sky-deep)]">Travel shop</h1>
       <p className="mt-3 max-w-2xl text-[var(--muted)]">
-        Add a product with its Amazon page. Hidden products stay off the public shelf.
+        Products on the shelf. Add one when you need a new Amazon link.
       </p>
-      <div className="mt-8">
+      <AdminShopStudio
+        products={products.map((product) => ({
+          id: product.id,
+          name: product.name,
+          category: product.category,
+          priceLabel: product.priceLabel,
+          isVisible: product.isVisible,
+        }))}
+        categories={categories}
+        error={error}
+      >
         <AdminNav current="shop" />
-      </div>
-      <ShopProductForm product={null} categories={categories} error={error} />
-      <div className="surface mt-8 overflow-x-auto rounded-[1.5rem]">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Shown</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.length ? (
-              products.map((product) => (
-                <tr key={product.id}>
-                  <td>
-                    <Link href={`/admin/shop/${product.id}`} className="font-semibold text-[var(--sky-deep)]">
-                      {product.name}
-                    </Link>
-                  </td>
-                  <td>{product.category || "—"}</td>
-                  <td>{product.priceLabel || "—"}</td>
-                  <td>{product.isVisible ? "Yes" : "No"}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={4}>No products yet.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      </AdminShopStudio>
     </div>
   );
 }

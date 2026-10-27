@@ -18,7 +18,7 @@ export default async function AdminUsersPage() {
       <h1 className="display text-4xl font-bold text-[var(--sky-deep)]">Manage users</h1>
       <p className="mt-3 text-[var(--muted)]">Review members and switch roles between user and admin.</p>
       <div className="mt-8">
-        <AdminNav current="users" />
+        <AdminNav />
       </div>
 
       <div className="surface overflow-x-auto rounded-[1.5rem]">

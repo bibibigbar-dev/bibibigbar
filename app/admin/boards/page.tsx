@@ -18,7 +18,7 @@ export default async function AdminBoardsPage() {
       <h1 className="display text-4xl font-bold text-[var(--sky-deep)]">Manage boards</h1>
       <p className="mt-3 text-[var(--muted)]">Add topic boards and activate or deactivate them.</p>
       <div className="mt-8">
-        <AdminNav current="boards" />
+        <AdminNav />
       </div>
 
       <form action={createBoardAction} className="surface mb-8 grid gap-4 rounded-[1.75rem] p-6 md:grid-cols-2">

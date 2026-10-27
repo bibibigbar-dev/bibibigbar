@@ -23,7 +23,7 @@ export default async function AdminPostsPage() {
       <h1 className="display text-4xl font-bold text-[var(--sky-deep)]">Moderate posts</h1>
       <p className="mt-3 text-[var(--muted)]">Pin, hide, or remove posts across every board.</p>
       <div className="mt-8">
-        <AdminNav current="posts" />
+        <AdminNav />
       </div>
 
       <div className="surface overflow-x-auto rounded-[1.5rem]">

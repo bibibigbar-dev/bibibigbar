@@ -1,17 +1,20 @@
 import { headers } from "next/headers";
-import { mainOrigin } from "@/lib/blog/config";
+import { blogMenuHref, mainMenuHref, shopMenuHref } from "@/lib/blog/config";
 
 export async function SiteFooter() {
   const headerStore = await headers();
   const onShopHost = headerStore.get("x-bibibig-site") === "shop";
-  const homeHref = onShopHost ? mainOrigin() : "/";
+  const loginHref = onShopHost ? mainMenuHref("/login") : "/login";
 
   return (
-    <footer className="site-footer">
-      <div className="container footer-bottom">
+    <footer className="blog-footer">
+      <div className="blog-footer-bar">
         <span>© {new Date().getFullYear()} BIBIBIGBAR</span>
-        <span>Dallas, TX</span>
-        <a href={homeHref}>Back to top</a>
+        <nav>
+          <a href={blogMenuHref()}>Blog</a>
+          <a href={shopMenuHref()}>Shop</a>
+          <a href={loginHref}>Log in</a>
+        </nav>
       </div>
     </footer>
   );

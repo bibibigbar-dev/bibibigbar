@@ -22,7 +22,7 @@ export default function WorkPage() {
       <div className="soon-list mt-12">
         {projects.map((project) => (
           <div key={project.index} className="soon-row">
-            <span>{project.index}</span>
+            <span className="soon-index">{project.index}</span>
             <span>{project.title}</span>
             <span className="home-door-soon">{project.meta}</span>
           </div>

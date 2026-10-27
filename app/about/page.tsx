@@ -15,17 +15,17 @@ export default function AboutPage() {
       </p>
       <div className="soon-list mt-12">
         <div className="soon-row">
-          <span>01</span>
+          <span className="soon-index">01</span>
           <span>YouTube</span>
           <span className="home-door-soon">Soon</span>
         </div>
         <div className="soon-row">
-          <span>02</span>
+          <span className="soon-index">02</span>
           <span>Naver Blog</span>
           <span className="home-door-soon">Soon</span>
         </div>
         <a className="soon-row" href="mailto:bibibigbar@gmail.com">
-          <span>03</span>
+          <span className="soon-index">03</span>
           <span>Email</span>
           <span>↗</span>
         </a>
