@@ -6,8 +6,9 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const headerStore = await headers();
   const publisherId = adsensePublisherId();
+  const site = headerStore.get("x-bibibig-site");
   const onJournal = headerStore.get("x-bibibig-blog-mount") === "subdomain";
-  if (!onJournal || !publisherId) {
+  if ((site !== "main" && !onJournal) || !publisherId) {
     return new Response("Not found\n", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
   }
 

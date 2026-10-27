@@ -46,8 +46,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const headerStore = await headers();
+  const site = headerStore.get("x-bibibig-site");
   const isJournalHost = headerStore.get("x-bibibig-blog-mount") === "subdomain";
-  if (headerStore.get("x-bibibig-site") === "blog") {
+  if (site === "blog") {
     return (
       <html lang="en">
         {isJournalHost ? (
@@ -68,6 +69,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      {site === "main" ? (
+        <head>
+          <AdSenseScript />
+        </head>
+      ) : null}
       <body className="font-sans antialiased">
         <EditorFonts />
         <a href="#main-content" className="skip-link">Skip to content</a>
