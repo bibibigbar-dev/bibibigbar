@@ -31,6 +31,17 @@ export function mainMenuHref(path: string) {
   return `${mainOrigin()}${path}`;
 }
 
+export function apexHomeHref(host: string | null, onSatelliteHost: boolean) {
+  if (!onSatelliteHost) return "/";
+  const raw = host || "";
+  const hostname = raw.split(":")[0].toLowerCase();
+  if (hostname.endsWith(".localhost")) {
+    const port = raw.includes(":") ? raw.slice(raw.lastIndexOf(":") + 1) : "";
+    return `http://localhost${port ? `:${port}` : ""}/`;
+  }
+  return `${mainOrigin()}/`;
+}
+
 export function adminBlogHref() {
   if (process.env.NODE_ENV !== "production") return "/admin/blog";
   return `${mainOrigin()}/admin/blog`;

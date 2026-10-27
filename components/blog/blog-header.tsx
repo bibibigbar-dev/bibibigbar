@@ -1,18 +1,21 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { logoutAction } from "@/lib/actions/auth";
-import { mainMenuHref, shopMenuHref } from "@/lib/blog/config";
+import { apexHomeHref, mainMenuHref, shopMenuHref } from "@/lib/blog/config";
 import { blogPath } from "@/lib/blog/paths";
 import { getCurrentUser } from "@/lib/queries";
 
 export async function BlogHeader() {
-  const [home, user] = await Promise.all([blogPath(), getCurrentUser()]);
+  const [home, user, headerStore] = await Promise.all([blogPath(), getCurrentUser(), headers()]);
+  const onBlogHost = headerStore.get("x-bibibig-blog-mount") === "subdomain";
+  const siteHome = apexHomeHref(headerStore.get("host"), onBlogHost);
 
   return (
     <header className="site-header">
       <div className="site-bar">
-        <Link href={home} className="site-wordmark">
+        <a href={siteHome} className="site-wordmark">
           Bibibigbar
-        </Link>
+        </a>
         <nav aria-label="Journal" className="site-nav">
           <Link href={home} aria-current="page">
             Blog

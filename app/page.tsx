@@ -44,7 +44,7 @@ export default function HomePage() {
       <h1 className="home-hero">
         Hi, I&apos;m
         <br />
-        bibibi<span className="title-mark">g</span>bar.
+        bibi<span className="title-mark">b</span>igbar.
         <br />
         I make things.
       </h1>
