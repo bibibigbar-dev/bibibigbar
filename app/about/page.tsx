@@ -29,7 +29,7 @@ export default function AboutPage() {
         <a className="soon-row" href="mailto:bibibigbar@gmail.com">
           <span className="soon-index">03</span>
           <span>Email</span>
-          <span>↗</span>
+          <span className="line-arrow">↗️</span>
         </a>
       </div>
     </div>

@@ -40,10 +40,19 @@ function detectImage(bytes: Uint8Array) {
   return Object.entries(imageTypes).find(([, kind]) => kind.matches(bytes)) || null;
 }
 
+function isHeic(bytes: Uint8Array) {
+  if (bytes.length < 12 || ascii(bytes, 4, 8) !== "ftyp") return false;
+  const brand = ascii(bytes, 8, 12).toLowerCase();
+  return ["heic", "heix", "hevc", "hevx", "mif1", "msf1", "heim", "heis"].includes(brand);
+}
+
 export async function storeImageBytes(bytes: Uint8Array) {
+  if (bytes.length === 0) throw new Error("That file is empty.");
+  if (bytes.length > MAX_BYTES) throw new Error(`Images must be ${blogImageLimitLabel()} or smaller.`);
   const detected = detectImage(bytes);
-  if (!detected || bytes.length === 0 || bytes.length > MAX_BYTES) {
-    throw new Error("That file is not a valid image.");
+  if (!detected) {
+    if (isHeic(bytes)) throw new Error("This photo is HEIC. Export it as a JPG and try again.");
+    throw new Error("Use a JPG, PNG, WebP, or GIF.");
   }
   const [contentType, kind] = detected;
   const now = new Date();
@@ -52,15 +61,10 @@ export async function storeImageBytes(bytes: Uint8Array) {
   return uploadSupabaseImage(bytes, contentType, objectPath);
 }
 
-export async function storeBlogImage(file: File) {
-  if (file.size <= 0 || file.size > MAX_BYTES) {
-    throw new Error(`Images must be ${blogImageLimitLabel()} or smaller.`);
-  }
-  const kind = imageTypes[file.type];
-  if (!kind) throw new Error("Use a JPG, PNG, WebP, or GIF.");
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  if (!kind.matches(bytes)) throw new Error("That file is not a valid image.");
-  return storeImageBytes(bytes);
+export async function storeBlogImage(file: Blob) {
+  if (file.size <= 0) throw new Error("That file is empty.");
+  if (file.size > MAX_BYTES) throw new Error(`Images must be ${blogImageLimitLabel()} or smaller.`);
+  return storeImageBytes(new Uint8Array(await file.arrayBuffer()));
 }
 
 async function writeLocalImage(bytes: Uint8Array, objectPath: string) {

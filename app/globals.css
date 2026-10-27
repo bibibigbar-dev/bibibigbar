@@ -130,6 +130,33 @@ select {
   color: var(--ink);
 }
 
+.schedule-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.field input[type="date"],
+.field input[type="time"],
+.field input[type="datetime-local"] {
+  display: block;
+  box-sizing: border-box;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .field input[type="date"]::-webkit-date-and-time-value,
+  .field input[type="time"]::-webkit-date-and-time-value,
+  .field input[type="datetime-local"]::-webkit-date-and-time-value {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    text-align: left;
+  }
+}
+
 .field textarea {
   min-height: 180px;
   resize: vertical;
@@ -376,6 +403,19 @@ select {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+.line-arrow {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+}
+.home-door-soon .line-arrow,
+.soon-row .line-arrow {
+  display: inline-block;
+  font-size: 1.35rem;
 }
 .page-hero {
   padding: 3.5rem 0 2rem;

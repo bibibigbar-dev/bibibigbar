@@ -169,7 +169,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
           <span className="blog-row-date">{shortDate(post.publishedAt)}</span>
           <span className="blog-row-title">{post.title}</span>
           <span className="blog-row-label">{categoryLabel(post)}</span>
-          <span className="blog-row-arrow">↗</span>
+          <span className="blog-row-arrow line-arrow">↗️</span>
         </Link>
       ))}
 

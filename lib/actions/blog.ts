@@ -162,7 +162,7 @@ export async function requeueTopicAction(formData: FormData) {
 export async function uploadBlogImageAction(formData: FormData): Promise<{ url?: string; error?: string }> {
   await requireAdmin();
   const file = formData.get("file");
-  if (!(file instanceof File)) return { error: "Choose an image." };
+  if (!(file instanceof Blob)) return { error: "Choose an image." };
   try {
     return { url: await storeBlogImage(file) };
   } catch (error) {

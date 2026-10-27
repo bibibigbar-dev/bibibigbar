@@ -15,11 +15,17 @@ import { editorFonts } from "@/lib/blog/fonts";
 import { deleteBlogPostAction, saveBlogPostAction, uploadBlogImageAction } from "@/lib/actions/blog";
 import { toDatetimeLocalValue } from "@/lib/blog/slug";
 import type { BlogPost } from "@/lib/blog/types";
+import { prepareUploadImage } from "./prepare-image";
 
-const acceptedImages = "image/jpeg,image/png,image/webp,image/gif";
+const acceptedImages = "image/*,.heic,.heif";
 
 function imageFiles(list: FileList | null | undefined) {
-  return [...(list || [])].filter((file) => file.type.startsWith("image/"));
+  return [...(list || [])].filter((file) => file.type.startsWith("image/") || /\.(jpe?g|png|gif|webp|heic|heif)$/i.test(file.name));
+}
+
+function scheduleParts(iso: string | null) {
+  const [date = "", time = ""] = toDatetimeLocalValue(iso).split("T");
+  return { date, time };
 }
 
 interface BlogEditorProps {
@@ -33,6 +39,10 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
   const [activeFont, setActiveFont] = useState("");
   const [html, setHtml] = useState(post?.content || "<p></p>");
   const [coverImageUrl, setCoverImageUrl] = useState(post?.coverImageUrl || "");
+  const initialSchedule = scheduleParts(post?.scheduledAt || null);
+  const [scheduleDate, setScheduleDate] = useState(initialSchedule.date);
+  const [scheduleTime, setScheduleTime] = useState(initialSchedule.time);
+  const scheduledAt = scheduleDate ? `${scheduleDate}T${scheduleTime || "00:00"}` : "";
   const [isUploading, setIsUploading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const inlineInputRef = useRef<HTMLInputElement>(null);
@@ -110,15 +120,22 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
   }
 
   async function onInlineFiles(event: ChangeEvent<HTMLInputElement>) {
-    const files = imageFiles(event.target.files);
-    event.target.value = "";
-    if (!files.length) return;
-    await uploadRef.current(files);
+    const input = event.currentTarget;
+    const files = imageFiles(input.files);
+    if (!files.length) {
+      input.value = "";
+      return;
+    }
+    try {
+      await uploadRef.current(files);
+    } finally {
+      input.value = "";
+    }
   }
 
   async function onCoverFile(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
+    const input = event.currentTarget;
+    const file = input.files?.[0];
     if (!file) return;
     setError(null);
     setIsUploading(true);
@@ -128,6 +145,7 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Could not upload the cover.");
     } finally {
+      input.value = "";
       setIsUploading(false);
     }
   }
@@ -164,7 +182,7 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
             <input name="title" defaultValue={post?.title || ""} required placeholder="A slow weekend in Jeonju" />
           </label>
           <p className="mt-2 text-xs text-[var(--muted)]">
-            Put the cursor in the paragraph, then upload a JPG, PNG, WebP, or GIF. You can also paste or drop a photo there.
+            Put the cursor in the paragraph, then upload a photo. Phone pictures are resized automatically. You can also paste or drop one there.
           </p>
           <div className="blog-toolbar" role="toolbar" aria-label="Formatting">
             <select
@@ -256,9 +274,9 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
                 placeholder="https://"
               />
             </label>
-            <label className="btn btn-secondary cursor-pointer">
-              Upload cover
-              <input type="file" accept={acceptedImages} className="sr-only" onChange={onCoverFile} />
+            <label className={`btn btn-secondary cursor-pointer ${isUploading ? "pointer-events-none opacity-60" : ""}`}>
+              {isUploading ? "Uploading..." : "Upload cover"}
+              <input type="file" accept={acceptedImages} className="sr-only" disabled={isUploading} onChange={onCoverFile} />
             </label>
             {coverImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -280,10 +298,24 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
                 <option value="published">Published</option>
               </select>
             </label>
-            <label className="field">
+            <div className="field">
               <span>Schedule time</span>
-              <input type="datetime-local" name="scheduledAt" defaultValue={toDatetimeLocalValue(post?.scheduledAt || null)} />
-            </label>
+              <div className="schedule-fields">
+                <input
+                  type="date"
+                  aria-label="Schedule date"
+                  value={scheduleDate}
+                  onChange={(event) => setScheduleDate(event.target.value)}
+                />
+                <input
+                  type="time"
+                  aria-label="Schedule time"
+                  value={scheduleTime}
+                  onChange={(event) => setScheduleTime(event.target.value)}
+                />
+              </div>
+              <input type="hidden" name="scheduledAt" value={scheduledAt} />
+            </div>
             <button type="submit" name="intent" value="save" className="btn btn-secondary" disabled={isPending}>
               {isPending ? "Saving..." : "Save"}
             </button>
@@ -314,8 +346,9 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
 }
 
 async function uploadImageFile(file: File) {
+  const prepared = await prepareUploadImage(file);
   const body = new FormData();
-  body.set("file", file);
+  body.set("file", prepared);
   const result = await uploadBlogImageAction(body);
   if (!result.url) throw new Error(result.error || "Could not upload the image.");
   return result.url;
