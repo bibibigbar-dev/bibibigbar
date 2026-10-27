@@ -37,7 +37,7 @@ function apexOrigin(request: NextRequest, hostname: string) {
 }
 
 function isStudioPath(pathname: string) {
-  return ["/admin", "/login", "/register", "/my", "/boards"].some(
+  return ["/admin", "/login", "/register", "/my", "/boards", "/english/admin"].some(
     (path) => pathname === path || pathname.startsWith(`${path}/`),
   );
 }

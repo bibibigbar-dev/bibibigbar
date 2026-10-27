@@ -1,13 +1,14 @@
 import Link from "next/link";
 
 interface AdminNavProps {
-  current?: "overview" | "blog" | "shop";
+  current?: "overview" | "blog" | "shop" | "english";
 }
 
 const links = [
   { href: "/admin", key: "overview", label: "Overview" },
   { href: "/admin/blog", key: "blog", label: "Blog" },
   { href: "/admin/shop", key: "shop", label: "Shop" },
+  { href: "/english/admin", key: "english", label: "English" },
 ] as const;
 
 export function AdminNav({ current }: AdminNavProps) {
