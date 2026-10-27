@@ -113,12 +113,16 @@ select {
 .field {
   display: grid;
   gap: 0.45rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .field input,
 .field textarea,
 .field select {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: 0.9rem;
   padding: 0.85rem 1rem;
@@ -1269,6 +1273,59 @@ select {
   color: #b42318;
 }
 
+.blog-studio,
+.blog-editor-layout,
+.blog-editor-panel,
+.blog-studio-head {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.blog-studio-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.blog-studio-head h1 {
+  font-size: clamp(1.7rem, 8vw, 2.25rem);
+  overflow-wrap: anywhere;
+}
+
+.blog-studio-head > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.blog-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+.blog-editor-layout > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.blog-studio-head .btn {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .blog-editor-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+
 .blog-toolbar {
   position: sticky;
   top: 0.75rem;
@@ -1276,6 +1333,7 @@ select {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+  max-width: 100%;
   margin-top: 1rem;
   padding: 0.55rem;
   border: 1px solid var(--line);
@@ -1284,12 +1342,15 @@ select {
 }
 
 .blog-toolbar select {
-  max-width: 9.5rem;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
   color: var(--ink);
 }
 
 .blog-toolbar select,
 .blog-toolbar button {
+  max-width: 100%;
   min-height: 2.1rem;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -1300,7 +1361,9 @@ select {
 }
 
 .blog-editor {
+  max-width: 100%;
   margin-top: 0;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-top: 0;
   border-radius: 0 0 1rem 1rem;
@@ -1309,20 +1372,31 @@ select {
 
 .blog-editor-surface {
   min-height: 320px;
+  max-width: 100%;
   padding: 1rem 1.1rem 1.4rem;
 }
 
 .blog-editor .ProseMirror {
   min-height: 320px;
+  max-width: 100%;
   outline: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .blog-editor .ProseMirror p.is-editor-empty:first-child::before {
-  float: left;
-  height: 0;
+  display: block;
+  max-width: 100%;
   color: var(--muted);
+  white-space: normal;
   content: attr(data-placeholder);
   pointer-events: none;
+}
+
+.blog-editor img,
+.blog-prose img {
+  max-width: 100%;
+  height: auto;
 }
 
 .blog-prose h2,
@@ -1371,6 +1445,7 @@ select {
 
 .blog-prose img {
   width: 100%;
+  max-width: 100%;
   height: auto;
   margin: 1rem 0;
   border-radius: 0.9rem;

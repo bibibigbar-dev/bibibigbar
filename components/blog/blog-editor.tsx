@@ -133,8 +133,8 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
   }
 
   return (
-    <div>
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div className="blog-studio">
+      <div className="blog-studio-head">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sunset)]">Studio</p>
           <h1 className="display mt-2 text-4xl font-bold text-[var(--sky-deep)]">
@@ -156,9 +156,9 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
       {saved ? <p className="blog-note">Saved.</p> : null}
       {error ? <p className="blog-error">{error}</p> : null}
 
-      <form action={handleSubmit} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <form action={handleSubmit} className="blog-editor-layout">
         <input type="hidden" name="id" value={post?.id || ""} />
-        <section className="surface rounded-[1.5rem] p-4 sm:p-6">
+        <section className="blog-editor-panel surface rounded-[1.5rem] p-4 sm:p-6">
           <label className="field">
             <span>Title</span>
             <input name="title" defaultValue={post?.title || ""} required placeholder="A slow weekend in Jeonju" />

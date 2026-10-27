@@ -44,7 +44,7 @@ export default async function TopicQueuePage({ searchParams }: TopicQueuePagePro
 
       {error ? <p className="blog-error mt-6">{error}</p> : null}
 
-      <form action={createTopicAction} className="surface mt-8 grid gap-4 rounded-[1.5rem] p-5 md:grid-cols-2">
+      <form action={createTopicAction} className="surface mt-8 grid min-w-0 grid-cols-1 gap-4 rounded-[1.5rem] p-5 md:grid-cols-2">
         <label className="field md:col-span-2">
           <span>Topic</span>
           <input name="title" required placeholder="US ESTA fee increase" />
