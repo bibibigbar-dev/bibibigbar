@@ -46,6 +46,7 @@ export function middleware(request: NextRequest) {
   const hostname = (request.headers.get("host") || "").split(":")[0].toLowerCase();
   const { pathname, search } = request.nextUrl;
   const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-bibibig-path", pathname);
 
   if (isShopHost(hostname)) {
     requestHeaders.set("x-bibibig-site", "shop");

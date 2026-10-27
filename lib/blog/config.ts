@@ -26,6 +26,11 @@ export function shopMenuHref() {
   return shopOrigin();
 }
 
+export function mainMenuHref(path: string) {
+  if (process.env.NODE_ENV !== "production") return path;
+  return `${mainOrigin()}${path}`;
+}
+
 export function adminBlogHref() {
   if (process.env.NODE_ENV !== "production") return "/admin/blog";
   return `${mainOrigin()}/admin/blog`;

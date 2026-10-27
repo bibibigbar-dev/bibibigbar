@@ -24,53 +24,52 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const allHref = await shopPath();
 
   return (
-    <div className="container py-12">
-      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sunset)]">Shop</p>
-      <h1 className="display mt-2 text-5xl font-bold text-[var(--sky-deep)]">Things for the road.</h1>
-      <p className="mt-4 max-w-2xl text-lg text-[var(--muted)]">
-        A short list of travel gear. Choosing one opens the product on Amazon.
-      </p>
-
-      {categories.length ? (
-        <div className="mt-8 flex flex-wrap gap-2">
-          <Link href={allHref} className={`blog-chip ${activeCategory ? "" : "is-active"}`}>
-            All
-          </Link>
-          {categories.map((item) => (
-            <Link
-              key={item}
-              href={`${allHref}?category=${encodeURIComponent(item)}`}
-              className={`blog-chip ${activeCategory.toLowerCase() === item.toLowerCase() ? "is-active" : ""}`}
-            >
-              {item}
-            </Link>
-          ))}
+    <div>
+      <div className="blog-index-hero">
+        <h1 className="blog-index-title">Shop</h1>
+        <div className="blog-index-aside">
+          <span>Travel gear, linked to Amazon</span>
+          <span className="blog-index-count">
+            {visible.length} {visible.length === 1 ? "product" : "products"}
+          </span>
         </div>
-      ) : null}
+      </div>
+
+      <div className="blog-filters">
+        <Link href={allHref} className={`blog-pill ${activeCategory ? "" : "is-active"}`}>
+          All
+        </Link>
+        {categories.map((item) => (
+          <Link
+            key={item}
+            href={`${allHref}?category=${encodeURIComponent(item)}`}
+            className={`blog-pill ${activeCategory.toLowerCase() === item.toLowerCase() ? "is-active" : ""}`}
+          >
+            {item}
+          </Link>
+        ))}
+        <span className="shop-note">Opens on Amazon</span>
+      </div>
 
       {visible.length ? (
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="shop-grid">
           {visible.map((product) => (
             <a
               key={product.id}
               href={product.amazonUrl}
               target="_blank"
               rel="sponsored noopener noreferrer"
-              className="shop-card"
+              className="shop-tile"
             >
-              {product.imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={product.imageUrl} alt="" className="shop-card-image" />
-              ) : (
-                <div className="shop-card-fallback" aria-hidden="true">
-                  {product.category || "Shop"}
-                </div>
-              )}
-              <div className="shop-card-body">
-                {product.category ? <p className="blog-kicker">{product.category}</p> : null}
+              <div className="shop-tile-photo">
+                {product.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={product.imageUrl} alt="" />
+                ) : null}
+              </div>
+              <div className="shop-tile-meta">
                 <h2>{product.name}</h2>
-                {product.priceLabel ? <p className="shop-price">{product.priceLabel}</p> : null}
-                <span>View on Amazon</span>
+                {product.priceLabel ? <span>{product.priceLabel}</span> : null}
               </div>
             </a>
           ))}

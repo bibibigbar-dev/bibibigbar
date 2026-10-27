@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdSlot } from "@/components/blog/ad-slot";
-import { PostCard } from "@/components/blog/post-card";
+import { PostShare } from "@/components/blog/post-share";
 import { getSessionUser } from "@/lib/auth";
 import {
   adsenseClient,
@@ -24,13 +24,10 @@ interface BlogPostPageProps {
   searchParams: Promise<{ preview?: string }>;
 }
 
-function relatedPosts(posts: BlogPost[], current: BlogPost) {
-  const others = posts.filter((post) => post.id !== current.id);
-  const same = others.filter(
-    (post) => current.destination && post.destination.toLowerCase() === current.destination.toLowerCase()
-  );
-  const sameIds = new Set(same.map((post) => post.id));
-  return [...same, ...others.filter((post) => !sameIds.has(post.id))].slice(0, 3);
+function categoryLabel(post: BlogPost) {
+  const destination = post.destination.trim();
+  if (destination && destination !== "-") return destination;
+  return post.tags.find((tag) => tag.trim() && tag.trim() !== "-") || "";
 }
 
 export async function generateMetadata({ params, searchParams }: BlogPostPageProps): Promise<Metadata> {
@@ -78,13 +75,15 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
 
   const [home, published, mount] = await Promise.all([blogPath(), repository.listPublished(), getBlogMount()]);
   const showAds = mount === "subdomain";
-  const hrefFor = async (item: BlogPost) => {
-    const path = await blogPath(item.slug);
-    return path;
-  };
-  const related = relatedPosts(published, post);
-  const relatedHrefs = await Promise.all(related.map((item) => hrefFor(item)));
+  const recent = published.some((item) => item.id === post.id) ? published : [post, ...published];
+  const currentIndex = recent.findIndex((item) => item.id === post.id);
+  const nextPost = currentIndex >= 0 ? recent[currentIndex + 1] : undefined;
+  const nextHref = nextPost ? await blogPath(nextPost.slug) : "";
   const url = canonicalPostUrl(post.slug);
+  const category = categoryLabel(post);
+  const meta = [category, post.publishedAt ? formatDate(post.publishedAt) : "", `${post.readingMinutes} min read`]
+    .filter(Boolean)
+    .join(" · ");
   const tagHrefs = await Promise.all(post.tags.map(async (tag) => ({ tag, href: `${home}?tag=${encodeURIComponent(tag)}` })));
   const jsonLd = {
     "@context": "https://schema.org",
@@ -113,45 +112,44 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   };
 
   return (
-    <article className="container py-12">
+    <article>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {post.status !== "published" ? <p className="blog-note">Draft preview. This page is not public.</p> : null}
-      <p className="blog-kicker">
-        <Link href={home}>Journal</Link>
-        {post.destination ? ` · ${post.destination}` : ""}
-      </p>
-      <h1 className="display mt-3 max-w-3xl text-5xl font-bold text-[var(--sky-deep)]">{post.title}</h1>
-      <p className="mt-4 text-sm text-[var(--muted)]">
-        {post.authorName}
-        {post.publishedAt ? ` · ${formatDate(post.publishedAt)}` : ""}
-        {` · ${post.readingMinutes} min read`}
-      </p>
-      {post.excerpt ? <p className="mt-6 max-w-3xl text-xl leading-relaxed text-[var(--ink)]">{post.excerpt}</p> : null}
-      {post.coverImageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.coverImageUrl} alt={post.title} className="blog-cover" />
-      ) : null}
-      {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("article")} /> : null}
-      <div className="blog-prose blog-article" dangerouslySetInnerHTML={{ __html: post.content }} />
-      {tagHrefs.length ? (
-        <div className="mt-8 flex flex-wrap gap-2">
-          {tagHrefs.map((item) => (
-            <Link key={item.tag} href={item.href} className="blog-chip">
-              {item.tag}
-            </Link>
-          ))}
+      {post.status !== "published" ? <p className="blog-note post-note">Draft preview. This page is not public.</p> : null}
+      <div className="post-bar">
+        <Link href={home}>← All posts</Link>
+        <span>{meta}</span>
+      </div>
+      <h1 className="post-title">{post.title}</h1>
+      <div className="post-cover">
+        {post.coverImageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={post.coverImageUrl} alt="" />
+        ) : null}
+      </div>
+      <div className="post-layout">
+        <PostShare url={url} title={post.title} />
+        <div>
+          {post.excerpt ? <p className="post-lede">{post.excerpt}</p> : null}
+          {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("article")} /> : null}
+          <div className="blog-prose post-body" dangerouslySetInnerHTML={{ __html: post.content }} />
+          {tagHrefs.length ? (
+            <div className="post-tags">
+              {tagHrefs.map((item) => (
+                <Link key={item.tag} href={item.href} className="blog-pill">
+                  {item.tag}
+                </Link>
+              ))}
+            </div>
+          ) : null}
+          {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} /> : null}
         </div>
-      ) : null}
-      {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} /> : null}
-      {related.length ? (
-        <section className="mt-14">
-          <h2 className="display text-3xl font-bold text-[var(--sky-deep)]">Keep reading</h2>
-          <div className="mt-6 grid gap-6 md:grid-cols-3">
-            {related.map((item, index) => (
-              <PostCard key={item.id} post={item} href={relatedHrefs[index]} />
-            ))}
-          </div>
-        </section>
+      </div>
+      {nextPost ? (
+        <Link href={nextHref} className="post-next">
+          <span>Next post</span>
+          <strong>{nextPost.title}</strong>
+          <span className="post-next-arrow">→</span>
+        </Link>
       ) : null}
     </article>
   );

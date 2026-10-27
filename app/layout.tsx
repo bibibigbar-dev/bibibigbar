@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
+import { Archivo } from "next/font/google";
 import { headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { adsenseClient } from "@/lib/blog/config";
 import { editorFontStylesheet } from "@/lib/blog/fonts";
-import { getCurrentUser, getActiveBoards } from "@/lib/queries";
+import { getCurrentUser } from "@/lib/queries";
 import "./globals.css";
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["400", "500", "800", "900"],
+  display: "swap",
+});
 
 function EditorFonts() {
   return <link rel="stylesheet" href={editorFontStylesheet} />;
@@ -30,11 +37,10 @@ function AdSenseScript() {
 
 export const metadata: Metadata = {
   title: {
-    default: "bibibigbar — The Big Little Show",
+    default: "bibibigbar",
     template: "%s · bibibigbar",
   },
-  description:
-    "A little offbeat, and still a fine little world. Welcome to bibibigbar's small circus for making things and keeping notes.",
+  description: "I make things, keep notes, and wander off sometimes.",
   verification: process.env.GOOGLE_SITE_VERIFICATION
     ? { google: process.env.GOOGLE_SITE_VERIFICATION }
     : undefined,
@@ -56,7 +62,7 @@ export default async function RootLayout({
             <AdSenseScript />
           </head>
         ) : null}
-        <body className="font-sans antialiased">
+        <body className={`${archivo.className} antialiased`}>
           <EditorFonts />
           {children}
           <Analytics />
@@ -65,7 +71,7 @@ export default async function RootLayout({
     );
   }
 
-  const [user, boards] = await Promise.all([getCurrentUser(), getActiveBoards()]);
+  const user = await getCurrentUser();
 
   return (
     <html lang="en">
@@ -74,10 +80,10 @@ export default async function RootLayout({
           <AdSenseScript />
         </head>
       ) : null}
-      <body className="font-sans antialiased">
+      <body className={`${archivo.className} antialiased`}>
         <EditorFonts />
         <a href="#main-content" className="skip-link">Skip to content</a>
-        <SiteHeader user={user} boards={boards} />
+        <SiteHeader user={user} />
         <main id="main-content" className="min-h-[70vh]">{children}</main>
         <SiteFooter />
         <Analytics />
