@@ -35,6 +35,11 @@ export function canonicalPostUrl(slug: string) {
   return `${blogOrigin()}/${slug}`;
 }
 
+export function readablePostUrl(status: string, slug: string) {
+  if (status === "published") return canonicalPostUrl(slug);
+  return `${mainOrigin()}/blog/${slug}?preview=1`;
+}
+
 export function supabaseProjectUrl() {
   return (process.env.SUPABASE_URL || "https://obpgjzrltdwvhyynafkx.supabase.co").replace(/\/$/, "");
 }

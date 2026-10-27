@@ -10,6 +10,7 @@ import ImageExtension from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextStyle from "@tiptap/extension-text-style";
 import FontFamily from "@tiptap/extension-font-family";
+import { readablePostUrl } from "@/lib/blog/config";
 import { editorFonts } from "@/lib/blog/fonts";
 import { deleteBlogPostAction, saveBlogPostAction, uploadBlogImageAction } from "@/lib/actions/blog";
 import { toDatetimeLocalValue } from "@/lib/blog/slug";
@@ -140,9 +141,16 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
             {post ? "Edit dispatch" : "New dispatch"}
           </h1>
         </div>
-        <Link href="/admin/blog" className="btn btn-secondary">
-          All posts
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          {post ? (
+            <a href={readablePostUrl(post.status, post.slug)} className="btn btn-secondary">
+              {post.status === "published" ? "Open on the journal" : "Preview draft"}
+            </a>
+          ) : null}
+          <Link href="/admin/blog" className="btn btn-secondary">
+            All posts
+          </Link>
+        </div>
       </div>
 
       {saved ? <p className="blog-note">Saved.</p> : null}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AdminNav } from "@/components/admin-nav";
-import { blogOrigin, blogSetupChecks, canonicalPostUrl } from "@/lib/blog/config";
+import { blogOrigin, blogSetupChecks, readablePostUrl } from "@/lib/blog/config";
 import { requireAdminPage } from "@/lib/blog/guard";
 import { getBlogRepository } from "@/lib/blog";
 import { formatDateTime } from "@/lib/utils";
@@ -67,7 +67,9 @@ export default async function AdminBlogPage() {
                       {post.title}
                     </Link>
                     <p className="text-xs text-[var(--muted)]">
-                      {post.status === "published" ? canonicalPostUrl(post.slug) : `/${post.slug}`}
+                      <a href={readablePostUrl(post.status, post.slug)}>
+                        {post.status === "published" ? "Open on the journal" : "Preview draft"}
+                      </a>
                     </p>
                   </td>
                   <td className="capitalize">{post.status}</td>
