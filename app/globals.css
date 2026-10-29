@@ -27,16 +27,29 @@
 }
 
 html {
+  max-width: 100%;
+  overflow-x: clip;
   scroll-behavior: smooth;
   scroll-padding-top: 2rem;
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
+  max-width: 100%;
   color: var(--foreground);
   background: var(--cream);
   font-family: var(--font-sans);
+}
+
+body > main,
+body > .blog-shell {
+  flex: 1 0 auto;
+  width: 100%;
+  min-width: 0;
 }
 
 a {
@@ -326,7 +339,9 @@ select {
 .title-mark { color: #ffc400; }
 .home-hero {
   margin: 0;
+  max-width: 100%;
   padding: 3.2rem 2.5rem 2.6rem;
+  overflow-x: clip;
   font-weight: 900;
   font-size: clamp(4.2rem, 10vw, 8.25rem);
   line-height: 0.9;
@@ -334,6 +349,7 @@ select {
   text-transform: uppercase;
 }
 .home-ticker {
+  max-width: 100%;
   overflow: hidden;
   background: var(--cobalt);
   color: var(--cream);
@@ -494,7 +510,10 @@ select {
     flex-wrap: wrap;
     gap: 0.9rem 1.2rem;
   }
-  .home-hero { padding-inline: 1.25rem; }
+  .home-hero {
+    padding-inline: 1.25rem;
+    font-size: clamp(2.2rem, 10.5vw, 4.6rem);
+  }
   .home-door {
     grid-template-columns: 2.5rem 1fr;
     padding-inline: 1.25rem;
@@ -719,7 +738,7 @@ select {
 
 .blog-shell {
   display: flex;
-  min-height: 100vh;
+  min-height: 100%;
   flex-direction: column;
   background: #f3f2ed;
   color: #1b3be0;

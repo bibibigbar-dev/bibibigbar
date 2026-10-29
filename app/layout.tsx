@@ -84,7 +84,7 @@ export default async function RootLayout({
         <EditorFonts />
         <a href="#main-content" className="skip-link">Skip to content</a>
         <SiteHeader user={user} />
-        <main id="main-content" className="min-h-[70vh]">{children}</main>
+        <main id="main-content">{children}</main>
         <SiteFooter />
         <Analytics />
       </body>
