@@ -77,7 +77,7 @@ export function blogAuthorName() {
 }
 
 export function adsenseClient() {
-  return process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "";
+  return process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "ca-pub-2197789902785723";
 }
 
 export function adsensePublisherId() {
@@ -85,9 +85,12 @@ export function adsensePublisherId() {
   return match?.[0] || "";
 }
 
-export function adsenseSlot(name: "feed" | "article") {
-  if (name === "feed") return process.env.NEXT_PUBLIC_ADSENSE_SLOT_FEED || "";
-  return process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE || "";
+export function adsenseSlot(name: "feed" | "article" | "multiplex") {
+  if (name === "multiplex") return process.env.NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX || "8631136115";
+  const slot = name === "feed"
+    ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_FEED
+    : process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE;
+  return slot || "5667554716";
 }
 
 export function shouldIndexBlog(mount: "subdomain" | "path") {
@@ -95,9 +98,10 @@ export function shouldIndexBlog(mount: "subdomain" | "path") {
 }
 
 export function blogSetupChecks(): SetupCheck[] {
-  const feedSlot = Boolean(process.env.NEXT_PUBLIC_ADSENSE_SLOT_FEED);
-  const articleSlot = Boolean(process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE);
-  const slotCount = Number(feedSlot) + Number(articleSlot);
+  const feedSlot = Boolean(adsenseSlot("feed"));
+  const articleSlot = Boolean(adsenseSlot("article"));
+  const multiplexSlot = Boolean(adsenseSlot("multiplex"));
+  const slotCount = Number(feedSlot) + Number(articleSlot) + Number(multiplexSlot);
 
   return [
     {
