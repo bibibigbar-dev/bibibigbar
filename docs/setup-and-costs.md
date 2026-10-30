@@ -126,6 +126,7 @@ Vercel Hobby 는 비상업 개인 프로젝트용입니다. 광고와 아마존 
 | `NEXT_PUBLIC_ADSENSE_CLIENT` | AdSense 게시자 ID, `ca-pub-` 로 시작 | 로컬, Vercel |
 | `NEXT_PUBLIC_ADSENSE_SLOT_FEED` | 목록 광고 칸 숫자 | 로컬, Vercel |
 | `NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE` | 글 광고 칸 숫자 | 로컬, Vercel |
+| `NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX` | 글 하단 Multiplex 광고 칸 숫자, 기본값 `8631136115` | 로컬, Vercel |
 | `GOOGLE_SITE_VERIFICATION` | Search Console 메타 태그의 content 값만 | 로컬, Vercel |
 
 직접 만드는 비밀번호가 아직 없을 때만 터미널에서 만듭니다. 이미 있는 `AUTH_SECRET` 과 `CRON_SECRET` 을 바꾸면 로그인 쿠키와 GitHub 호출이 어긋납니다.
@@ -179,11 +180,15 @@ openssl rand -base64 32
 
 ### Google AdSense
 
-게시자 ID 는 이미 로컬에 있습니다. 광고가 실제로 그려지려면 칸 번호 두 개가 더 필요합니다. 심사가 통과된 뒤에 만듭니다.
+기본 게시자 ID 는 `ca-pub-2197789902785723`, 광고 단위 `ad1` 의 칸 번호는 `5667554716` 입니다. 환경 변수가 없거나 비어 있어도 이 값으로 목록과 본문에 반응형 디스플레이 광고를 표시합니다. 스크립트는 페이지에서 한 번 로드하고 각 광고 칸은 별도로 초기화합니다. 실제 광고 노출은 AdSense 승인 및 광고 공급 상태에 따라 달라집니다.
+
+글 하단에는 `8631136115` 광고 단위를 `data-ad-format="autorelaxed"` 로 추가 표시합니다. 이 Multiplex 광고는 기존 디스플레이 광고와 별도이며, `NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX` 로 칸 번호를 변경할 수 있습니다.
+
+다른 게시자나 광고 단위를 사용하려면 다음 환경 변수를 설정합니다.
 
 1. https://adsense.google.com 에 로그인합니다.
 2. 계정 → 계정 정보에서 게시자 ID 를 확인합니다. `ca-pub-` 뒤에 숫자가 붙은 전체 문자열이 `NEXT_PUBLIC_ADSENSE_CLIENT` 입니다.
-3. 광고 → 광고 단위에서 디스플레이 광고를 두 개 만듭니다. 하나는 글 목록, 하나는 글 본문입니다.
+3. 광고 → 광고 단위에서 디스플레이 광고를 만듭니다. 목록과 본문에 같은 광고 단위를 쓰거나 각각 다른 단위를 쓸 수 있습니다.
 4. 광고 코드의 `data-ad-slot="1234567890"` 에서 따옴표 안 숫자만 복사합니다.
 5. 목록 칸은 `NEXT_PUBLIC_ADSENSE_SLOT_FEED`, 본문 칸은 `NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE` 입니다.
 6. Vercel 에 넣고 다시 배포하면 `https://bibibigbar.com/ads.txt` 에 `google.com, pub-숫자, DIRECT, f08c47fec0942fa0` 이 나옵니다.

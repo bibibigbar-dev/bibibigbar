@@ -151,6 +151,9 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
           <span className="post-next-arrow">→</span>
         </Link>
       ) : null}
+      {showAds ? (
+        <AdSlot client={adsenseClient()} slot={adsenseSlot("multiplex")} format="autorelaxed" />
+      ) : null}
     </article>
   );
 }

@@ -5,9 +5,10 @@ import { useEffect, useRef } from "react";
 interface AdSlotProps {
   client: string;
   slot: string;
+  format?: "auto" | "autorelaxed";
 }
 
-export function AdSlot({ client, slot }: AdSlotProps) {
+export function AdSlot({ client, slot, format = "auto" }: AdSlotProps) {
   const pushed = useRef(false);
 
   useEffect(() => {
@@ -31,8 +32,8 @@ export function AdSlot({ client, slot }: AdSlotProps) {
         style={{ display: "block" }}
         data-ad-client={client}
         data-ad-slot={slot}
-        data-ad-format="auto"
-        data-full-width-responsive="true"
+        data-ad-format={format}
+        data-full-width-responsive={format === "auto" ? "true" : undefined}
       />
     </aside>
   );
