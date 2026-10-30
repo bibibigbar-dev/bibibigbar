@@ -103,6 +103,12 @@ select {
 }
 
 .btn-primary:hover {
+  background: #ffc400;
+  border-color: #ffc400;
+  color: var(--cobalt);
+}
+
+.btn-danger:hover {
   background: #982b20;
 }
 
