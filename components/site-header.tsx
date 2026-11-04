@@ -32,6 +32,7 @@ export async function SiteHeader({ user }: SiteHeaderProps) {
           shopHref={shopMenuHref()}
           workHref={pageHref("/work")}
           aboutHref={pageHref("/about")}
+          travelHref={pageHref("/travel-map")}
           adminHref={pageHref("/admin")}
           onShopHost={onShopHost}
         />
