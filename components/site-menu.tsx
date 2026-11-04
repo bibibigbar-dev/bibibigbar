@@ -8,6 +8,7 @@ interface SiteMenuProps {
   shopHref: string;
   workHref: string;
   aboutHref: string;
+  travelHref: string;
   adminHref: string;
   onShopHost: boolean;
 }
@@ -16,7 +17,7 @@ function mark(active: boolean) {
   return active ? "page" : undefined;
 }
 
-export function SiteMenu({ blogHref, shopHref, workHref, aboutHref, adminHref, onShopHost }: SiteMenuProps) {
+export function SiteMenu({ blogHref, shopHref, workHref, aboutHref, travelHref, adminHref, onShopHost }: SiteMenuProps) {
   const path = usePathname() || "/";
   const shopActive = onShopHost
     ? path === "/" || path === "/shop" || path.startsWith("/shop/")
@@ -37,6 +38,7 @@ export function SiteMenu({ blogHref, shopHref, workHref, aboutHref, adminHref, o
       <Link href={workHref} aria-current={mark(path === "/work" || path.startsWith("/work/"))}>
         Work
       </Link>
+      <Link href={travelHref} aria-current={mark(path === "/travel-map")}>Travel Map</Link>
       <Link href={aboutHref} aria-current={mark(path === "/about" || path.startsWith("/about/"))}>
         About
       </Link>
