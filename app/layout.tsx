@@ -23,16 +23,8 @@ function AdSenseScript() {
   const client = adsenseClient();
   if (!client) return null;
 
-  return (
-    <>
-      <meta name="google-adsense-account" content={client} />
-      <script
-        async
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
-        crossOrigin="anonymous"
-      />
-    </>
-  );
+  // The ad script itself is loaded only on article pages with enough content.
+  return <meta name="google-adsense-account" content={client} />;
 }
 
 export const metadata: Metadata = {

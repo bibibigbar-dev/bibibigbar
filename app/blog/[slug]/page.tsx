@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import { AdSlot } from "@/components/blog/ad-slot";
 import { PostShare } from "@/components/blog/post-share";
 import { getSessionUser } from "@/lib/auth";
@@ -13,11 +14,14 @@ import {
   shouldIndexBlog,
 } from "@/lib/blog/config";
 import { getBlogRepository } from "@/lib/blog";
+import { plainText } from "@/lib/blog/html";
 import { blogPath, getBlogMount } from "@/lib/blog/paths";
 import type { BlogPost } from "@/lib/blog/types";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+const MIN_AD_CONTENT_CHARS = 1500;
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -73,8 +77,12 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
     if (!wantsPreview || user?.role !== "admin") notFound();
   }
 
-  const [home, published] = await Promise.all([blogPath(), repository.listPublished()]);
-  const showAds = post.status === "published" && !wantsPreview;
+  const [home, published, mount] = await Promise.all([blogPath(), repository.listPublished(), getBlogMount()]);
+  const showAds =
+    mount === "subdomain" &&
+    post.status === "published" &&
+    !wantsPreview &&
+    plainText(post.content).length >= MIN_AD_CONTENT_CHARS;
   const recent = published.some((item) => item.id === post.id) ? published : [post, ...published];
   const currentIndex = recent.findIndex((item) => item.id === post.id);
   const nextPost = currentIndex >= 0 ? recent[currentIndex + 1] : undefined;
@@ -114,6 +122,14 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   return (
     <article>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {showAds ? (
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient()}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      ) : null}
       {post.status !== "published" ? <p className="blog-note post-note">Draft preview. This page is not public.</p> : null}
       <div className="post-bar">
         <Link href={home}>← All posts</Link>
@@ -130,7 +146,6 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
         <PostShare url={url} title={post.title} />
         <div>
           {post.excerpt ? <p className="post-lede">{post.excerpt}</p> : null}
-          {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("article")} /> : null}
           <div className="blog-prose post-body" dangerouslySetInnerHTML={{ __html: post.content }} />
           {tagHrefs.length ? (
             <div className="post-tags">
@@ -141,7 +156,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
               ))}
             </div>
           ) : null}
-          {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} /> : null}
+          {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("article")} /> : null}
         </div>
       </div>
       {nextPost ? (

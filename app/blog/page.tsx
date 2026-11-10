@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdSlot } from "@/components/blog/ad-slot";
-import { adsenseClient, adsenseSlot, blogOrigin } from "@/lib/blog/config";
+import { blogOrigin } from "@/lib/blog/config";
 import { getBlogRepository } from "@/lib/blog";
 import { blogPath } from "@/lib/blog/paths";
 import type { BlogPost } from "@/lib/blog/types";
@@ -160,8 +159,6 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
           </div>
         </Link>
       ) : null}
-
-      {featured ? <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} /> : null}
 
       {rows.map((post) => (
         <Link key={post.id} href={postHref(post)} className="blog-row">
