@@ -53,15 +53,12 @@ export default async function RootLayout({
 }>) {
   const headerStore = await headers();
   const site = headerStore.get("x-bibibig-site");
-  const isJournalHost = headerStore.get("x-bibibig-blog-mount") === "subdomain";
   if (site === "blog") {
     return (
       <html lang="en">
-        {isJournalHost ? (
-          <head>
-            <AdSenseScript />
-          </head>
-        ) : null}
+        <head>
+          <AdSenseScript />
+        </head>
         <body className={`${archivo.className} antialiased`}>
           <EditorFonts />
           {children}

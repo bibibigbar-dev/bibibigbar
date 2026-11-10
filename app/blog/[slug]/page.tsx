@@ -73,8 +73,8 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
     if (!wantsPreview || user?.role !== "admin") notFound();
   }
 
-  const [home, published, mount] = await Promise.all([blogPath(), repository.listPublished(), getBlogMount()]);
-  const showAds = mount === "subdomain";
+  const [home, published] = await Promise.all([blogPath(), repository.listPublished()]);
+  const showAds = post.status === "published" && !wantsPreview;
   const recent = published.some((item) => item.id === post.id) ? published : [post, ...published];
   const currentIndex = recent.findIndex((item) => item.id === post.id);
   const nextPost = currentIndex >= 0 ? recent[currentIndex + 1] : undefined;
