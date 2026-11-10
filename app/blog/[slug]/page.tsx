@@ -60,6 +60,9 @@ export async function generateMetadata({ params, searchParams }: BlogPostPagePro
   };
 }
 
+// Ads are only served on articles with enough original text.
+const MIN_AD_TEXT_LENGTH = 1200;
+
 export default async function BlogPostPage({ params, searchParams }: BlogPostPageProps) {
   const { slug } = await params;
   const { preview } = await searchParams;
@@ -74,7 +77,8 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   }
 
   const [home, published, mount] = await Promise.all([blogPath(), repository.listPublished(), getBlogMount()]);
-  const showAds = mount === "subdomain";
+  const textLength = post.content.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim().length;
+  const showAds = mount === "subdomain" && post.status === "published" && textLength >= MIN_AD_TEXT_LENGTH;
   const recent = published.some((item) => item.id === post.id) ? published : [post, ...published];
   const currentIndex = recent.findIndex((item) => item.id === post.id);
   const nextPost = currentIndex >= 0 ? recent[currentIndex + 1] : undefined;

@@ -19,18 +19,20 @@ function EditorFonts() {
   return <link rel="stylesheet" href={editorFontStylesheet} />;
 }
 
-function AdSenseScript() {
+function AdSenseScript({ loadScript = true }: { loadScript?: boolean }) {
   const client = adsenseClient();
   if (!client) return null;
 
   return (
     <>
       <meta name="google-adsense-account" content={client} />
+      {loadScript ? (
       <script
         async
         src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
         crossOrigin="anonymous"
       />
+      ) : null}
     </>
   );
 }
@@ -77,7 +79,7 @@ export default async function RootLayout({
     <html lang="en">
       {site === "main" ? (
         <head>
-          <AdSenseScript />
+          <AdSenseScript loadScript={false} />
         </head>
       ) : null}
       <body className={`${archivo.className} antialiased`}>
