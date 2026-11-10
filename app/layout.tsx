@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
 import { headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/react";
 import { SiteHeader } from "@/components/site-header";
@@ -9,14 +8,16 @@ import { editorFontStylesheet } from "@/lib/blog/fonts";
 import { getCurrentUser } from "@/lib/queries";
 import "./globals.css";
 
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["400", "500", "800", "900"],
-  display: "swap",
-});
+const archivoStylesheet =
+  "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;800;900&display=swap";
 
 function EditorFonts() {
-  return <link rel="stylesheet" href={editorFontStylesheet} />;
+  return (
+    <>
+      <link rel="stylesheet" href={archivoStylesheet} />
+      <link rel="stylesheet" href={editorFontStylesheet} />
+    </>
+  );
 }
 
 function AdSenseScript({ loadScript = true }: { loadScript?: boolean }) {
@@ -64,7 +65,7 @@ export default async function RootLayout({
             <AdSenseScript />
           </head>
         ) : null}
-        <body className={`${archivo.className} antialiased`}>
+        <body className="antialiased">
           <EditorFonts />
           {children}
           <Analytics />
@@ -82,7 +83,7 @@ export default async function RootLayout({
           <AdSenseScript loadScript={false} />
         </head>
       ) : null}
-      <body className={`${archivo.className} antialiased`}>
+      <body className="antialiased">
         <EditorFonts />
         <a href="#main-content" className="skip-link">Skip to content</a>
         <SiteHeader user={user} />
