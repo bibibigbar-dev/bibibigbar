@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AdSlot } from "@/components/blog/ad-slot";
-import { adsenseClient, adsenseSlot, blogOrigin } from "@/lib/blog/config";
+import { blogOrigin } from "@/lib/blog/config";
 import { getBlogRepository } from "@/lib/blog";
-import { blogPath, getBlogMount } from "@/lib/blog/paths";
+import { blogPath } from "@/lib/blog/paths";
 import type { BlogPost } from "@/lib/blog/types";
 
 export const dynamic = "force-dynamic";
@@ -42,7 +41,6 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
   const repository = getBlogRepository();
   const published = await repository.listPublished();
   const home = await blogPath();
-  const showAds = (await getBlogMount()) === "subdomain";
   const activeTag = tag.trim();
   const activeDestination = destination.trim();
   const query = q.trim();
@@ -162,7 +160,6 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
         </Link>
       ) : null}
 
-      {showAds && featured ? <AdSlot client={adsenseClient()} slot={adsenseSlot("feed")} /> : null}
 
       {rows.map((post) => (
         <Link key={post.id} href={postHref(post)} className="blog-row">
