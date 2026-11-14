@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { blogMenuHref, mainMenuHref } from "@/lib/blog/config";
 import { getRequestLocale } from "@/lib/get-locale";
 import { getSiteCopy } from "@/lib/site-copy";
@@ -25,11 +26,11 @@ export async function SiteFooter() {
         <nav>
           <a href={blogMenuHref()}>{nav.blog}</a>
           <span aria-hidden="true">·</span>
-          <a href="/travel-map">{nav.map}</a>
+          <Link href="/travel-map">{nav.map}</Link>
           <span aria-hidden="true">·</span>
-          <a href="/work">{nav.work}</a>
+          <Link href="/work">{nav.work}</Link>
           <span aria-hidden="true">·</span>
-          <a href="/about">{nav.about}</a>
+          <Link href="/about">{nav.about}</Link>
         </nav>
       </footer>
     );
@@ -42,9 +43,9 @@ export async function SiteFooter() {
           <span>© {new Date().getFullYear()} BIBIBIGBAR</span>
           <nav>
             <a href={blogMenuHref()}>{nav.blog}</a>
-            <a href="/travel-map">{nav.map}</a>
-            <a href="/work">{nav.work}</a>
-            <a href="/about">{nav.about}</a>
+            <Link href="/travel-map">{nav.map}</Link>
+            <Link href="/work">{nav.work}</Link>
+            <Link href="/about">{nav.about}</Link>
             <a href="mailto:bibibigbar@gmail.com">{nav.email}</a>
           </nav>
         </div>
@@ -58,7 +59,7 @@ export async function SiteFooter() {
         <span>© {new Date().getFullYear()} BIBIBIGBAR</span>
         <nav>
           <a href={blogMenuHref()}>{nav.blog}</a>
-          <a href="/travel-map">{nav.map}</a>
+          <Link href="/travel-map">{nav.map}</Link>
           <a href={loginHref}>{nav.login}</a>
         </nav>
       </div>

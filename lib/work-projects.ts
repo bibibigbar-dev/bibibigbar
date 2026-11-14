@@ -101,6 +101,7 @@ export const workProjects: WorkProject[] = [
       en: "Everyday English for school, the doctor, and daycare — explained in your language, with reply helpers and call practice.",
       ko: "학교·병원·어린이집 일상 영어를 내 언어로 설명하고, 답장 도우미와 전화 연습까지 돕는 앱입니다.",
     },
+    privacyHref: "/work/bibibig-english/privacy",
     heroImage: "/work/bibibig-english/hero.png",
     screens: [
       "/work/bibibig-english/screen-01.png",
