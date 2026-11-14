@@ -11,6 +11,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import TextStyle from "@tiptap/extension-text-style";
 import FontFamily from "@tiptap/extension-font-family";
 import { readablePostUrl } from "@/lib/blog/config";
+import { travelCountryNames } from "@/lib/blog/destination";
 import { editorFonts } from "@/lib/blog/fonts";
 import { deleteBlogPostAction, saveBlogPostAction, uploadBlogImageAction } from "@/lib/actions/blog";
 import { toDatetimeLocalValue } from "@/lib/blog/slug";
@@ -254,8 +255,26 @@ export function BlogEditor({ post, saved = false }: BlogEditorProps) {
               <input name="slug" defaultValue={post?.slug || ""} placeholder="jeonju-slow-weekend" />
             </label>
             <label className="field">
-              <span>Destination</span>
-              <input name="destination" defaultValue={post?.destination || ""} placeholder="Jeonju" />
+              <span>Category</span>
+              <input name="category" defaultValue={post?.category || ""} placeholder="여행정보" list="blog-category-options" />
+              <datalist id="blog-category-options">
+                <option value="여행정보" />
+                <option value="촬영지" />
+              </datalist>
+            </label>
+            <label className="field">
+              <span>Destination (country)</span>
+              <input
+                name="destination"
+                defaultValue={post?.destination || ""}
+                placeholder="Japan"
+                list="blog-country-options"
+              />
+              <datalist id="blog-country-options">
+                {travelCountryNames().map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
             </label>
             <label className="field">
               <span>Tags</span>

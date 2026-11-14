@@ -34,8 +34,21 @@ async function ensureStoreFile(): Promise<void> {
 function normalizeStore(store: AppStore): AppStore {
   return {
     ...store,
-    blogPosts: Array.isArray(store.blogPosts) ? store.blogPosts : [],
-    blogTopics: Array.isArray(store.blogTopics) ? store.blogTopics : [],
+    blogPosts: Array.isArray(store.blogPosts)
+      ? store.blogPosts.map((post) => {
+          if (typeof post.category === "string") {
+            return { ...post, category: post.category, destination: post.destination || "" };
+          }
+          return { ...post, category: post.destination || "", destination: "" };
+        })
+      : [],
+    blogTopics: Array.isArray(store.blogTopics)
+      ? store.blogTopics.map((topic) => ({
+          ...topic,
+          category: typeof topic.category === "string" ? topic.category : topic.destination ? "여행정보" : "",
+          destination: topic.destination || "",
+        }))
+      : [],
     blogProducts: Array.isArray(store.blogProducts) ? store.blogProducts : [],
   };
 }

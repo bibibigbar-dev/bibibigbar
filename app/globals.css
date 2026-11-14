@@ -407,6 +407,9 @@ select {
 .home-ticker-track span {
   white-space: nowrap;
 }
+.home-doors {
+  position: relative;
+}
 .home-door {
   position: relative;
   display: grid;
@@ -437,6 +440,57 @@ select {
 .home-door:hover,
 .home-door:focus-visible {
   color: var(--cream);
+}
+.home-preview {
+  position: fixed;
+  z-index: 40;
+  width: min(240px, 42vw);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-40%, -55%) rotate(-8deg) scale(0.92);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.home-preview.is-visible {
+  opacity: 1;
+  transform: translate(-40%, -55%) rotate(-8deg) scale(1);
+}
+.home-preview-card {
+  overflow: hidden;
+  background: var(--cream);
+  border: 2px solid var(--cobalt);
+  box-shadow: 10px 14px 0 color-mix(in srgb, var(--cobalt) 22%, transparent);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+}
+.home-preview-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  flex: 1;
+}
+.home-preview-card span,
+.home-preview-card p {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--cobalt);
+  background: var(--cream);
+}
+.home-preview-card p {
+  border-top: 1px solid color-mix(in srgb, var(--cobalt) 25%, transparent);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@media (hover: none) {
+  .home-preview {
+    display: none;
+  }
 }
 .home-door-index {
   font-size: 0.9rem;
@@ -1819,6 +1873,56 @@ select {
   color: var(--sky-mid);
 }
 
+.travel-map-post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.travel-map-post {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  color: inherit;
+  text-decoration: none;
+}
+
+.travel-map-post:first-child {
+  border-top: 0;
+  padding-top: 0.25rem;
+}
+
+.travel-map-post strong {
+  font-size: 1.05rem;
+  line-height: 1.35;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.travel-map-post em {
+  font-style: normal;
+  font-size: 0.8125rem;
+  color: var(--sky-mid);
+}
+
+.travel-map-post span {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--sky-mid);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.travel-map-post b {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
 .travel-map-aside-links {
   gap: 0.75rem;
 }
@@ -1899,13 +2003,17 @@ select {
 
 .about-portrait {
   aspect-ratio: 4 / 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: repeating-linear-gradient(135deg, #e2e4f3 0 12px, #eceef7 12px 24px);
-  color: var(--sunset-soft);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 0.75rem;
+  overflow: hidden;
+  background: #d8d8d8;
+}
+
+.about-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  filter: grayscale(1) contrast(1.05);
+  display: block;
 }
 
 .work-hero-meta {

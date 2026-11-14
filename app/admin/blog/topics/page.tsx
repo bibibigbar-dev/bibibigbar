@@ -50,7 +50,15 @@ export default async function TopicQueuePage({ searchParams }: TopicQueuePagePro
           <input name="title" required placeholder="US ESTA fee increase" />
         </label>
         <label className="field">
-          <span>Destination</span>
+          <span>Category</span>
+          <input name="category" defaultValue="여행정보" placeholder="여행정보" list="topic-category-options" />
+          <datalist id="topic-category-options">
+            <option value="여행정보" />
+            <option value="촬영지" />
+          </datalist>
+        </label>
+        <label className="field">
+          <span>Destination (country)</span>
           <input name="destination" placeholder="United States" />
         </label>
         <label className="field">
@@ -81,7 +89,7 @@ export default async function TopicQueuePage({ searchParams }: TopicQueuePagePro
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--sunset)]">{topic.status}</p>
                   <h2 className="display mt-1 text-2xl font-bold text-[var(--sky-deep)]">{topic.title}</h2>
                   <p className="mt-2 text-sm text-[var(--muted)]">
-                    {[edition ? `${String(edition.hour).padStart(2, "0")}:00 KST` : "", topic.destination, topic.angle].filter(Boolean).join(" · ") || "No extra direction yet."}
+                    {[edition ? `${String(edition.hour).padStart(2, "0")}:00 KST` : "", topic.category, topic.destination, topic.angle].filter(Boolean).join(" · ") || "No extra direction yet."}
                   </p>
                   {topic.error ? <p className="mt-2 text-sm text-[#b42318]">{topic.error}</p> : null}
                 </div>

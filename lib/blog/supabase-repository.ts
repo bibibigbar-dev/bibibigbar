@@ -9,6 +9,7 @@ interface PostRow {
   excerpt: string;
   content: string;
   cover_image_url: string | null;
+  category: string | null;
   destination: string | null;
   tags: string[] | null;
   status: string;
@@ -27,6 +28,7 @@ interface PostRow {
 interface TopicRow {
   id: string;
   title: string;
+  category: string | null;
   destination: string | null;
   angle: string | null;
   keywords: string[] | null;
@@ -99,6 +101,7 @@ function mapPost(row: PostRow): BlogPost {
     excerpt: row.excerpt || "",
     content: row.content || "",
     coverImageUrl: row.cover_image_url || "",
+    category: row.category || "",
     destination: row.destination || "",
     tags: row.tags || [],
     status: asPostStatus(row.status),
@@ -123,6 +126,7 @@ function toPostRow(post: BlogPost): PostRow {
     excerpt: post.excerpt,
     content: post.content,
     cover_image_url: post.coverImageUrl,
+    category: post.category,
     destination: post.destination,
     tags: post.tags,
     status: post.status,
@@ -143,6 +147,7 @@ function mapTopic(row: TopicRow): BlogTopic {
   return {
     id: row.id,
     title: row.title,
+    category: row.category || "",
     destination: row.destination || "",
     angle: row.angle || "",
     keywords: row.keywords || [],
@@ -159,6 +164,7 @@ function toTopicRow(topic: BlogTopic): TopicRow {
   return {
     id: topic.id,
     title: topic.title,
+    category: topic.category,
     destination: topic.destination,
     angle: topic.angle,
     keywords: topic.keywords,

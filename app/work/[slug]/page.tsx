@@ -57,10 +57,12 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
           <span>{copy.stack}</span>
           <strong>{project.stack}</strong>
         </div>
-        <div>
-          <span>{copy.year}</span>
-          <strong>{project.year}</strong>
-        </div>
+        {project.year ? (
+          <div>
+            <span>{copy.year}</span>
+            <strong>{project.year}</strong>
+          </div>
+        ) : null}
         {project.cta ? (
           ctaIsExternal ? (
             <a href={project.cta.href} target="_blank" rel="noreferrer" className="work-detail-cta">

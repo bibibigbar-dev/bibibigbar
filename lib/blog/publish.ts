@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { gatherTravelBriefs, generateTravelPost } from "./ai";
 import { blogAuthorName, isAutoPublishEnabled } from "./config";
+import { normalizeCountryDestination } from "./destination";
 import { readingMinutes } from "./html";
 import { getBlogRepository } from "./index";
 import { editionTag, GATHER_HOUR, isPublishHour, PUBLISH_HOURS, readEdition, seoulClock, seoulSlotIso } from "./schedule";
@@ -69,7 +70,8 @@ export async function generateTopicIntoPost(
       excerpt: article.excerpt,
       content: article.contentHtml,
       coverImageUrl: article.coverImageUrl,
-      destination: article.destination,
+      category: article.category || topic.category || "여행정보",
+      destination: normalizeCountryDestination(article.destination || topic.destination),
       tags: article.tags,
       status: mode === "publish" ? "published" : mode === "schedule" ? "scheduled" : "draft",
       publishedAt: mode === "publish" ? now : null,
@@ -79,7 +81,7 @@ export async function generateTopicIntoPost(
       authorName: blogAuthorName(),
       readingMinutes: readingMinutes(article.contentHtml),
       source: "ai",
-      aiPrompt: [topic.title, topic.destination, topic.angle, topic.notes].filter(Boolean).join("\n"),
+      aiPrompt: [topic.title, topic.category, topic.destination, topic.angle, topic.notes].filter(Boolean).join("\n"),
       createdAt: now,
       updatedAt: now,
     };
@@ -165,7 +167,8 @@ async function ensureDailyBriefs(dateKey: string, hours: number[]) {
     await repository.saveTopic({
       id: `topic-${randomUUID()}`,
       title: brief.title,
-      destination: brief.destination,
+      category: "여행정보",
+      destination: normalizeCountryDestination(brief.destination),
       angle: brief.angle,
       keywords: brief.keywords,
       notes: `${editionTag(dateKey, hour)}\n${brief.notes}`,

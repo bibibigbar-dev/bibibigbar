@@ -11,6 +11,7 @@ import { storeBlogImage } from "@/lib/blog/images";
 import { getBlogRepository } from "@/lib/blog";
 import { generateTopicIntoPost, revalidateBlog, runPublishQueue } from "@/lib/blog/publish";
 import { readHttpUrl, readTags } from "@/lib/blog/slug";
+import { normalizeCountryDestination } from "@/lib/blog/destination";
 import type { BlogPost, BlogPostStatus } from "@/lib/blog/types";
 
 function topicError(message: string): never {
@@ -73,7 +74,8 @@ export async function saveBlogPostAction(formData: FormData): Promise<{ error?: 
     excerpt,
     content,
     coverImageUrl,
-    destination: String(formData.get("destination") || "").trim().slice(0, 80),
+    category: String(formData.get("category") || "").trim().slice(0, 80),
+    destination: normalizeCountryDestination(String(formData.get("destination") || "")),
     tags: readTags(String(formData.get("tags") || "")),
     status,
     publishedAt: status === "published" ? existing?.publishedAt || now : null,
@@ -121,7 +123,8 @@ export async function createTopicAction(formData: FormData) {
   await getBlogRepository().saveTopic({
     id: `topic-${randomUUID()}`,
     title,
-    destination: String(formData.get("destination") || "").trim().slice(0, 80),
+    category: String(formData.get("category") || "").trim().slice(0, 80) || "여행정보",
+    destination: normalizeCountryDestination(String(formData.get("destination") || "")),
     angle: String(formData.get("angle") || "").trim().slice(0, 240),
     keywords: readTags(String(formData.get("keywords") || "")),
     notes: String(formData.get("notes") || "").trim().slice(0, 2000),

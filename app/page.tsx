@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { HomeDoors } from "@/components/home-doors";
+import { getBlogRepository } from "@/lib/blog";
 import { blogMenuHref } from "@/lib/blog/config";
 import { getRequestLocale } from "@/lib/get-locale";
 import { getSiteCopy } from "@/lib/site-copy";
@@ -7,18 +8,14 @@ export default async function HomePage() {
   const locale = await getRequestLocale();
   const copy = getSiteCopy(locale).home;
   const loop = [copy.ticker, copy.ticker];
-  const doors: Array<{
-    index: string;
-    title: string;
-    copy: string;
-    href: string;
-    external: boolean;
-    soon?: boolean;
-  }> = [
+  const latest = (await getBlogRepository().listPublished())[0] || null;
+  const blogBase = blogMenuHref().replace(/\/$/, "");
+  const doors = [
     {
       ...copy.doors[0],
       href: blogMenuHref(),
       external: true,
+      previewKey: "blog" as const,
     },
     {
       ...copy.doors[1],
@@ -54,32 +51,19 @@ export default async function HomePage() {
           ))}
         </div>
       </div>
-      {doors.map((door) => {
-        const inner = (
-          <>
-            <span className="home-door-index">{door.index}</span>
-            <span className="home-door-title">{door.title}</span>
-            <span className="home-door-copy">{door.copy}</span>
-            {door.soon ? (
-              <span className="home-door-soon">{copy.soon}</span>
-            ) : (
-              <span className="home-door-soon line-arrow">{"\u2197\uFE0E"}</span>
-            )}
-          </>
-        );
-        if (door.external) {
-          return (
-            <a key={door.index} href={door.href} className="home-door">
-              {inner}
-            </a>
-          );
+      <HomeDoors
+        doors={doors}
+        soonLabel={copy.soon}
+        blogPreview={
+          latest
+            ? {
+                title: latest.title,
+                coverImageUrl: latest.coverImageUrl,
+                href: `${blogBase}/${latest.slug}`,
+              }
+            : null
         }
-        return (
-          <Link key={door.index} href={door.href} className="home-door">
-            {inner}
-          </Link>
-        );
-      })}
+      />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { postMatchesCountry } from "@/lib/blog/destination";
 import type { Locale } from "@/lib/locale";
 import { countries, resolveCountries } from "@/lib/travel/countries";
 import { getTravelMapCopy, regionFilterKey } from "@/lib/travel/copy";
@@ -17,8 +18,19 @@ interface Feature {
   geometry: Geometry;
 }
 
+export interface TravelMapPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  destination: string;
+  publishedAt: string | null;
+  href: string;
+}
+
 interface TravelMapProps {
   initialLocale: Locale;
+  posts: TravelMapPost[];
 }
 
 const GEOJSON_URL = "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson";
@@ -71,7 +83,15 @@ function countryCode(feature: Feature): string {
   return aliases[String(p.name || p.NAME || "")] || "";
 }
 
-export function TravelMap({ initialLocale }: TravelMapProps) {
+function shortDate(value: string | null, locale: Locale) {
+  if (!value) return "";
+  return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(new Date(value));
+}
+
+export function TravelMap({ initialLocale, posts }: TravelMapProps) {
   const locale = initialLocale;
   const copy = getTravelMapCopy(locale);
   const localized = useMemo(() => resolveCountries(locale), [locale]);
@@ -112,6 +132,11 @@ export function TravelMap({ initialLocale }: TravelMapProps) {
       return regionMatch && searchMatch;
     });
   }, [localized, locale, region, search]);
+
+  const countryPosts = useMemo(
+    () => posts.filter((post) => postMatchesCountry(post.destination, selected.code)),
+    [posts, selected.code],
+  );
 
   return (
     <div className="travel-map">
@@ -223,13 +248,27 @@ export function TravelMap({ initialLocale }: TravelMapProps) {
           </div>
 
           <div className="travel-map-aside-block">
-            <span>{copy.entry}</span>
-            <p>{selected.entry}</p>
+            <span>
+              {copy.posts} · {countryPosts.length}
+            </span>
+            {countryPosts.length ? (
+              <div className="travel-map-post-list">
+                {countryPosts.map((post) => (
+                  <a key={post.slug} href={post.href} className="travel-map-post">
+                    <strong>{post.title}</strong>
+                    <em>
+                      {[post.category, shortDate(post.publishedAt, locale)].filter(Boolean).join(" · ")}
+                    </em>
+                    {post.excerpt ? <span>{post.excerpt}</span> : null}
+                    <b>{copy.openPost} →</b>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p>{copy.postsEmpty}</p>
+            )}
           </div>
-          <div className="travel-map-aside-block">
-            <span>{copy.prep}</span>
-            <p>{selected.preparation}</p>
-          </div>
+
           <div className="travel-map-aside-block travel-map-aside-links">
             <span>{copy.official}</span>
             {selected.official.map((o) => (

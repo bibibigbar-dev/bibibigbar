@@ -9,6 +9,7 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   coverImageUrl: string;
+  category: string;
   destination: string;
   tags: string[];
   status: BlogPostStatus;
@@ -39,6 +40,7 @@ export interface ShopProduct {
 export interface BlogTopic {
   id: string;
   title: string;
+  category: string;
   destination: string;
   angle: string;
   keywords: string[];
@@ -59,5 +61,6 @@ export interface GeneratedTravelPost {
   seoTitle: string;
   seoDescription: string;
   tags: string[];
+  category: string;
   destination: string;
 }

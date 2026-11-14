@@ -27,8 +27,8 @@ interface BlogPostPageProps {
 }
 
 function categoryLabel(post: BlogPost) {
-  const destination = post.destination.trim();
-  if (destination && destination !== "-") return destination;
+  const category = post.category.trim();
+  if (category && category !== "-") return category;
   return post.tags.find((tag) => tag.trim() && tag.trim() !== "-") || "";
 }
 
@@ -95,12 +95,17 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   const category = categoryLabel(post);
   const meta = [
     category,
+    post.destination,
     post.publishedAt ? formatDate(post.publishedAt) : "",
     `${post.readingMinutes} ${copy.minRead}`,
   ]
     .filter(Boolean)
     .join(" · ");
   const tagHrefs = await Promise.all(post.tags.map(async (tag) => ({ tag, href: `${home}?tag=${encodeURIComponent(tag)}` })));
+  const categoryHref = category ? `${home}?category=${encodeURIComponent(category)}` : "";
+  const destinationHref = post.destination
+    ? `${home}?destination=${encodeURIComponent(post.destination)}`
+    : "";
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -154,8 +159,18 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
           {post.excerpt ? <p className="post-lede">{post.excerpt}</p> : null}
           {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("article")} /> : null}
           <div className="blog-prose post-body" dangerouslySetInnerHTML={{ __html: post.content }} />
-          {tagHrefs.length ? (
+          {categoryHref || destinationHref || tagHrefs.length ? (
             <div className="post-tags">
+              {categoryHref ? (
+                <Link href={categoryHref} className="blog-pill">
+                  {category}
+                </Link>
+              ) : null}
+              {destinationHref ? (
+                <Link href={destinationHref} className="blog-pill">
+                  {post.destination}
+                </Link>
+              ) : null}
               {tagHrefs.map((item) => (
                 <Link key={item.tag} href={item.href} className="blog-pill">
                   {item.tag}

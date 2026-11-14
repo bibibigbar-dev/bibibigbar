@@ -5,7 +5,7 @@ export const travelMapCopy = {
     kicker: "BIBIBIGBAR · TRAVEL GUIDE",
     titleLine: "World travel guide map",
     intro:
-      "Pick a country to check entry prep notes and official guidance. Focused on ordinary tourism with a Korean passport.",
+      "Pick a country to browse related blog posts and official guidance. Focused on ordinary tourism with a Korean passport.",
     searchLabel: "Search countries",
     searchPlaceholder: "Search countries (e.g. Japan)",
     regionLabel: "Filter by region",
@@ -18,17 +18,18 @@ export const travelMapCopy = {
     legendSelected: "Selected",
     empty: "No countries match your search.",
     guideLabel: "COUNTRY GUIDE",
-    entry: "01 — Entry",
-    prep: "02 — Travel prep",
-    official: "03 — Official sources",
+    posts: "Blog posts",
+    postsEmpty: "No posts tagged with this country yet.",
+    openPost: "Read",
+    official: "Official sources",
     disclaimer:
-      "This page is a short travel-prep summary, not live border or travel-advisory data. Rules change often — always recheck official sources before you book or depart.",
+      "Posts are linked by country destination. Official rules change often — always recheck sources before you book or depart.",
   },
   ko: {
     kicker: "BIBIBIGBAR · TRAVEL GUIDE",
     titleLine: "세계 여행 정보 지도",
     intro:
-      "국가를 선택해 입국 준비 정보와 공식 안내 사이트를 확인하세요. 한국 여권의 일반 관광 여행을 중심으로 정리했습니다.",
+      "국가를 선택해 관련 블로그 글과 공식 안내 사이트를 확인하세요. 한국 여권의 일반 관광 여행을 중심으로 정리했습니다.",
     searchLabel: "국가 검색",
     searchPlaceholder: "국가 검색 (예: 일본)",
     regionLabel: "지역 필터",
@@ -41,11 +42,12 @@ export const travelMapCopy = {
     legendSelected: "선택",
     empty: "검색 결과가 없습니다.",
     guideLabel: "COUNTRY GUIDE",
-    entry: "01 — 입국 정보",
-    prep: "02 — 여행 준비",
-    official: "03 — 공식 정보 확인",
+    posts: "블로그 글",
+    postsEmpty: "이 나라로 연결된 글이 아직 없습니다.",
+    openPost: "읽기",
+    official: "공식 정보",
     disclaimer:
-      "이 페이지는 여행 준비를 돕는 요약 안내이며 실시간 입국 심사·여행경보를 제공하지 않습니다. 규정은 수시로 바뀔 수 있으므로 예약·출발 전 반드시 공식 기관에서 최신 조건을 확인하세요.",
+      "글은 destination(나라명)으로 연결됩니다. 규정은 바뀔 수 있으니 예약·출발 전 공식 기관에서 다시 확인하세요.",
   },
 } as const;
 

@@ -19,8 +19,9 @@ export default async function AboutPage() {
     <div className="about-page">
       <div className="about-hero">
         <h1>{copy.title}</h1>
-        <div className="about-portrait" aria-hidden="true">
-          {copy.portrait}
+        <div className="about-portrait">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/about/portrait.jpg" alt={copy.portrait} />
         </div>
       </div>
 
@@ -31,9 +32,6 @@ export default async function AboutPage() {
 
       <div className="about-resume-head">
         <span>{copy.resume}</span>
-        <span className="about-pdf is-disabled" aria-disabled="true">
-          {copy.downloadPdf}
-        </span>
       </div>
 
       <div className="about-timeline">

@@ -1,4 +1,5 @@
 import { blogAuthorName } from "./config";
+import { normalizeCountryDestination } from "./destination";
 import { excerptFrom, plainText, sanitizePostHtml } from "./html";
 import { storeImageBytes } from "./images";
 import { editionNotes } from "./schedule";
@@ -199,9 +200,11 @@ export async function generateTravelPost(topic: BlogTopic): Promise<GeneratedTra
   if (!allowedUrls.length) throw new Error("The brief has no source URL, so it cannot be written.");
 
   const prompt = [
-    "Return a JSON object with keys: title, slug, excerpt, seoTitle, seoDescription, tags, destination, sections, sources, thumbnailPrompt, imagePrompts.",
+    "Return a JSON object with keys: title, slug, excerpt, seoTitle, seoDescription, tags, category, destination, sections, sources, thumbnailPrompt, imagePrompts.",
     "Write in English.",
     "slug must be English kebab-case.",
+    "category is a short topic label such as travel news or filming locations.",
+    "destination must be a country name only (for example Japan or United States), never a city.",
     "sections is an array of 3 to 5 items. Each item has heading and paragraphs. paragraphs is an array of 2 to 4 plain-text sentences.",
     "Do not add a sources heading inside sections. Use no more than 5 sections.",
     "Cover what changed, who it affects, whether travel is still practical, and what to verify before departure.",
@@ -212,7 +215,8 @@ export async function generateTravelPost(topic: BlogTopic): Promise<GeneratedTra
     "seoTitle should stay under 60 characters. seoDescription should stay under 160 characters.",
     "tags should contain 3 to 6 short phrases.",
     `Topic: ${topic.title}`,
-    `Destination: ${topic.destination || "unspecified"}`,
+    `Category: ${topic.category || "여행정보"}`,
+    `Destination country: ${topic.destination || "unspecified"}`,
     `Angle: ${topic.angle || "whether travelers can still go, and what changed"}`,
     `Keywords: ${topic.keywords.join(", ") || "none"}`,
     `Notes: ${notes || "none"}`,
@@ -262,7 +266,8 @@ export async function generateTravelPost(topic: BlogTopic): Promise<GeneratedTra
     seoTitle: (readString(record.seoTitle) || title).slice(0, 70),
     seoDescription: (readString(record.seoDescription) || excerptFrom(contentHtml, 160)).slice(0, 180),
     tags: readTags(record.tags),
-    destination: readString(record.destination) || topic.destination,
+    category: readString(record.category) || topic.category || "여행정보",
+    destination: normalizeCountryDestination(readString(record.destination) || topic.destination),
   };
 }
 
@@ -352,7 +357,7 @@ export async function gatherTravelBriefs(recentTitles: string[], count: number):
     "Each item has keys: title, destination, angle, keywords, notes.",
     "Write every field in English.",
     "title is a headline about the travel issue, such as a visa fee change or whether protests or weather make the trip impractical.",
-    "destination is the country or city.",
+    "destination is the country name only.",
     "angle is one sentence on what a traveler needs to decide.",
     "keywords is an array of 3 to 6 short phrases.",
     "notes must include the sourced facts, any stated date or fee, whether travel is currently practical, what to verify, and at least one source URL copied from the memo.",
@@ -386,7 +391,7 @@ export async function gatherTravelBriefs(recentTitles: string[], count: number):
     if (!title || notes.length < 80 || !/https?:\/\//.test(notes)) return [];
     return [{
       title,
-      destination: readString(record.destination).slice(0, 80),
+      destination: normalizeCountryDestination(readString(record.destination)),
       angle: readString(record.angle).slice(0, 160),
       keywords: readTags(record.keywords),
       notes: notes.slice(0, 2000),

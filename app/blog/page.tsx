@@ -11,7 +11,7 @@ import { getSiteCopy } from "@/lib/site-copy";
 export const dynamic = "force-dynamic";
 
 interface BlogIndexProps {
-  searchParams: Promise<{ tag?: string; destination?: string; page?: string; q?: string }>;
+  searchParams: Promise<{ tag?: string; category?: string; destination?: string; page?: string; q?: string }>;
 }
 
 function shortDate(value: string | null, locale: Locale) {
@@ -23,16 +23,16 @@ function shortDate(value: string | null, locale: Locale) {
 }
 
 function categoryLabel(post: BlogPost) {
-  const destination = post.destination.trim();
-  if (destination && destination !== "-") return destination;
+  const category = post.category.trim();
+  if (category && category !== "-") return category;
   return post.tags[0] || "";
 }
 
 export async function generateMetadata({ searchParams }: BlogIndexProps): Promise<Metadata> {
-  const { tag, destination } = await searchParams;
+  const { tag, category, destination } = await searchParams;
   const locale = await getRequestLocale();
   const copy = getSiteCopy(locale).blog;
-  const label = destination || tag;
+  const label = category || destination || tag;
   return {
     title: {
       absolute: label ? `${label} · bibibigbar` : "Blog · bibibigbar",
@@ -43,23 +43,33 @@ export async function generateMetadata({ searchParams }: BlogIndexProps): Promis
 }
 
 export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
-  const { tag = "", destination = "", page: pageParam = "1", q = "" } = await searchParams;
+  const {
+    tag = "",
+    category = "",
+    destination = "",
+    page: pageParam = "1",
+    q = "",
+  } = await searchParams;
   const locale = await getRequestLocale();
   const copy = getSiteCopy(locale).blog;
   const repository = getBlogRepository();
   const published = await repository.listPublished();
   const home = await blogPath();
   const activeTag = tag.trim();
+  const activeCategory = category.trim();
   const activeDestination = destination.trim();
   const query = q.trim();
   const filtered = published.filter((post) => {
     const matchesTag = activeTag ? post.tags.some((item) => item.toLowerCase() === activeTag.toLowerCase()) : true;
+    const matchesCategory = activeCategory
+      ? post.category.toLowerCase() === activeCategory.toLowerCase()
+      : true;
     const matchesDestination = activeDestination
       ? post.destination.toLowerCase() === activeDestination.toLowerCase()
       : true;
-    const haystack = `${post.title} ${post.excerpt} ${post.destination} ${post.tags.join(" ")}`.toLowerCase();
+    const haystack = `${post.title} ${post.excerpt} ${post.category} ${post.destination} ${post.tags.join(" ")}`.toLowerCase();
     const matchesQuery = query ? haystack.includes(query.toLowerCase()) : true;
-    return matchesTag && matchesDestination && matchesQuery;
+    return matchesTag && matchesCategory && matchesDestination && matchesQuery;
   });
   const pageSize = 8;
   const page = Math.max(1, Number(pageParam) || 1);
@@ -68,11 +78,18 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
   const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const featured = currentPage === 1 ? visible[0] : undefined;
   const rows = featured ? visible.slice(1) : visible;
-  const categories = [...new Set(published.map(categoryLabel).filter(Boolean))].slice(0, 8);
+  const categories = [...new Set(published.map(categoryLabel).filter(Boolean))].slice(0, 12);
 
-  function hrefFor(nextPage: number, nextTag = activeTag, nextDestination = activeDestination, nextQuery = query) {
+  function hrefFor(
+    nextPage: number,
+    nextTag = activeTag,
+    nextCategory = activeCategory,
+    nextDestination = activeDestination,
+    nextQuery = query,
+  ) {
     const params = new URLSearchParams();
     if (nextTag) params.set("tag", nextTag);
+    if (nextCategory) params.set("category", nextCategory);
     if (nextDestination) params.set("destination", nextDestination);
     if (nextQuery) params.set("q", nextQuery);
     if (nextPage > 1) params.set("page", String(nextPage));
@@ -109,27 +126,19 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
       </div>
 
       <div className="blog-filters">
-        <Link href={hrefFor(1, "", "", query)} className={`blog-pill ${activeDestination || activeTag ? "" : "is-active"}`}>
+        <Link href={hrefFor(1, "", "", "", query)} className={`blog-pill ${activeCategory || activeDestination || activeTag ? "" : "is-active"}`}>
           {copy.all}
         </Link>
         {categories.map((item) => {
-          const matchesDestination = published.some(
-            (post) => post.destination.trim().toLowerCase() === item.toLowerCase(),
-          );
-          const isActive = matchesDestination
-            ? activeDestination.toLowerCase() === item.toLowerCase()
-            : activeTag.toLowerCase() === item.toLowerCase();
+          const isActive = activeCategory.toLowerCase() === item.toLowerCase();
           return (
-            <Link
-              key={item}
-              href={hrefFor(1, matchesDestination ? "" : item, matchesDestination ? item : "", query)}
-              className={`blog-pill ${isActive ? "is-active" : ""}`}
-            >
+            <Link key={item} href={hrefFor(1, "", item, "", query)} className={`blog-pill ${isActive ? "is-active" : ""}`}>
               {item}
             </Link>
           );
         })}
         <form className="blog-search" action={home}>
+          {activeCategory ? <input type="hidden" name="category" value={activeCategory} /> : null}
           {activeDestination ? <input type="hidden" name="destination" value={activeDestination} /> : null}
           {activeTag ? <input type="hidden" name="tag" value={activeTag} /> : null}
           <input name="q" defaultValue={query} placeholder={copy.search} aria-label={copy.searchAria} />
@@ -141,7 +150,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
 
       {activeTag ? (
         <p className="blog-filters">
-          {copy.tagged} {activeTag}. <Link href={hrefFor(1, "", activeDestination, query)}>{copy.clearTag}</Link>
+          {copy.tagged} {activeTag}. <Link href={hrefFor(1, "", activeCategory, activeDestination, query)}>{copy.clearTag}</Link>
         </p>
       ) : null}
 
@@ -159,6 +168,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
               <span>
                 {[
                   categoryLabel(featured),
+                  featured.destination,
                   shortDate(featured.publishedAt, locale),
                   `${featured.readingMinutes} ${copy.min}`,
                 ]
@@ -176,7 +186,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
         <Link key={post.id} href={postHref(post)} className="blog-row">
           <span className="blog-row-date">{shortDate(post.publishedAt, locale)}</span>
           <span className="blog-row-title">{post.title}</span>
-          <span className="blog-row-label">{categoryLabel(post)}</span>
+          <span className="blog-row-label">{[categoryLabel(post), post.destination].filter(Boolean).join(" · ")}</span>
           <span className="blog-row-arrow line-arrow">{"\u2197\uFE0E"}</span>
         </Link>
       ))}
