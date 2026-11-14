@@ -2,46 +2,40 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { Locale } from "@/lib/locale";
+import { getSiteCopy } from "@/lib/site-copy";
 
 interface SiteMenuProps {
+  locale: Locale;
   blogHref: string;
-  shopHref: string;
+  mapHref: string;
   workHref: string;
   aboutHref: string;
   adminHref: string;
-  onShopHost: boolean;
 }
 
 function mark(active: boolean) {
   return active ? "page" : undefined;
 }
 
-export function SiteMenu({ blogHref, shopHref, workHref, aboutHref, adminHref, onShopHost }: SiteMenuProps) {
+export function SiteMenu({ locale, blogHref, mapHref, workHref, aboutHref, adminHref }: SiteMenuProps) {
   const path = usePathname() || "/";
-  const shopActive = onShopHost
-    ? path === "/" || path === "/shop" || path.startsWith("/shop/")
-    : path === "/shop" || path.startsWith("/shop/");
+  const nav = getSiteCopy(locale).nav;
 
   return (
-    <nav aria-label="Main" className="site-nav">
-      <a href={blogHref}>Blog</a>
-      {shopHref.startsWith("http") ? (
-        <a href={shopHref} aria-current={mark(shopActive)}>
-          Shop
-        </a>
-      ) : (
-        <Link href={shopHref} aria-current={mark(shopActive)}>
-          Shop
-        </Link>
-      )}
+    <nav aria-label={nav.mainAria} className="site-nav">
+      <a href={blogHref}>{nav.blog}</a>
+      <Link href={mapHref} aria-current={mark(path === "/travel-map" || path.startsWith("/travel-map/"))}>
+        {nav.map}
+      </Link>
       <Link href={workHref} aria-current={mark(path === "/work" || path.startsWith("/work/"))}>
-        Work
+        {nav.work}
       </Link>
       <Link href={aboutHref} aria-current={mark(path === "/about" || path.startsWith("/about/"))}>
-        About
+        {nav.about}
       </Link>
       <Link href={adminHref} aria-current={mark(path === "/admin" || path.startsWith("/admin/"))}>
-        Admin
+        {nav.admin}
       </Link>
     </nav>
   );

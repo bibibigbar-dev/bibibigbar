@@ -1,6 +1,26 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { blogOrigin, mainOrigin, shopOrigin } from "@/lib/blog/config";
+import { LOCALE_COOKIE, LOCALE_HEADER, resolveLocale } from "@/lib/locale";
+
+function requestCountry(request: NextRequest) {
+  const geo = (request as NextRequest & { geo?: { country?: string } }).geo;
+  return (
+    request.headers.get("x-vercel-ip-country") ||
+    request.headers.get("cf-ipcountry") ||
+    geo?.country ||
+    null
+  );
+}
+
+function applyLocaleHeaders(request: NextRequest, requestHeaders: Headers) {
+  const locale = resolveLocale({
+    cookie: request.cookies.get(LOCALE_COOKIE)?.value,
+    country: requestCountry(request),
+    acceptLanguage: request.headers.get("accept-language"),
+  });
+  requestHeaders.set(LOCALE_HEADER, locale);
+}
 
 function hostsFor(origin: () => string, defaults: string[]) {
   const hosts = new Set(defaults);
@@ -47,6 +67,7 @@ export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-bibibig-path", pathname);
+  applyLocaleHeaders(request, requestHeaders);
 
   if (isShopHost(hostname)) {
     requestHeaders.set("x-bibibig-site", "shop");

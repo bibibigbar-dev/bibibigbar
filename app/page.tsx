@@ -1,52 +1,51 @@
 import Link from "next/link";
-import { blogMenuHref, shopMenuHref } from "@/lib/blog/config";
+import { blogMenuHref } from "@/lib/blog/config";
+import { getRequestLocale } from "@/lib/get-locale";
+import { getSiteCopy } from "@/lib/site-copy";
 
-const ticker =
-  "I have a dream. There was a dream higher than the sky. I want to know. Can't you just give me the confidence to push ahead my own way?";
-
-const doors = [
-  {
-    index: "01",
-    title: "Blog",
-    copy: "Writing about everyday life, making, and wandering.",
-    href: blogMenuHref(),
-    external: true,
-  },
-  {
-    index: "02",
-    title: "Shop",
-    copy: "Small goods, made and picked by me.",
-    href: shopMenuHref(),
-    external: true,
-  },
-  {
-    index: "03",
-    title: "Work",
-    copy: "Apps and websites. Still being collected.",
-    href: "/work",
-    external: false,
-    soon: true,
-  },
-  {
-    index: "04",
-    title: "About",
-    copy: "A developer and maker based in Dallas.",
-    href: "/about",
-    external: false,
-  },
-];
-
-export default function HomePage() {
-  const loop = [ticker, ticker];
+export default async function HomePage() {
+  const locale = await getRequestLocale();
+  const copy = getSiteCopy(locale).home;
+  const loop = [copy.ticker, copy.ticker];
+  const doors: Array<{
+    index: string;
+    title: string;
+    copy: string;
+    href: string;
+    external: boolean;
+    soon?: boolean;
+  }> = [
+    {
+      ...copy.doors[0],
+      href: blogMenuHref(),
+      external: true,
+    },
+    {
+      ...copy.doors[1],
+      href: "/travel-map",
+      external: false,
+    },
+    {
+      ...copy.doors[2],
+      href: "/work",
+      external: false,
+      soon: true,
+    },
+    {
+      ...copy.doors[3],
+      href: "/about",
+      external: false,
+    },
+  ];
 
   return (
     <div>
       <h1 className="home-hero">
-        Hi, I&apos;m
+        {copy.heroLead}
         <br />
         bibi<span className="title-mark">b</span>igbar.
         <br />
-        I make things.
+        {copy.heroEnd}
       </h1>
       <div className="home-ticker">
         <div className="home-ticker-track">
@@ -62,7 +61,7 @@ export default function HomePage() {
             <span className="home-door-title">{door.title}</span>
             <span className="home-door-copy">{door.copy}</span>
             {door.soon ? (
-              <span className="home-door-soon">Soon</span>
+              <span className="home-door-soon">{copy.soon}</span>
             ) : (
               <span className="home-door-soon line-arrow">{"\u2197\uFE0E"}</span>
             )}

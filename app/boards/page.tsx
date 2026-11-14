@@ -12,7 +12,7 @@ export default async function BoardsPage() {
     <div className="container py-12">
       <h1 className="display text-4xl font-bold text-[var(--sky-deep)]">Boards</h1>
       <p className="mt-3 max-w-2xl text-[var(--muted)]">
-        Choose a topic and join the conversation. Each board is for a different part of Dallas life.
+        Choose a topic and join the conversation.
       </p>
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         {boards.map((board) => (

@@ -4,6 +4,9 @@ import { blogOrigin } from "@/lib/blog/config";
 import { getBlogRepository } from "@/lib/blog";
 import { blogPath } from "@/lib/blog/paths";
 import type { BlogPost } from "@/lib/blog/types";
+import { getRequestLocale } from "@/lib/get-locale";
+import type { Locale } from "@/lib/locale";
+import { getSiteCopy } from "@/lib/site-copy";
 
 export const dynamic = "force-dynamic";
 
@@ -11,9 +14,12 @@ interface BlogIndexProps {
   searchParams: Promise<{ tag?: string; destination?: string; page?: string; q?: string }>;
 }
 
-function shortDate(value: string | null) {
+function shortDate(value: string | null, locale: Locale) {
   if (!value) return "";
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat(locale === "ko" ? "ko-KR" : "en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(new Date(value));
 }
 
 function categoryLabel(post: BlogPost) {
@@ -24,20 +30,22 @@ function categoryLabel(post: BlogPost) {
 
 export async function generateMetadata({ searchParams }: BlogIndexProps): Promise<Metadata> {
   const { tag, destination } = await searchParams;
+  const locale = await getRequestLocale();
+  const copy = getSiteCopy(locale).blog;
   const label = destination || tag;
   return {
     title: {
       absolute: label ? `${label} · bibibigbar` : "Blog · bibibigbar",
     },
-    description: label
-      ? `Notes about ${label} from bibibigbar.`
-      : "Notes from the everyday. Writing about life, making, and wandering.",
+    description: label ? `${label} · bibibigbar` : copy.metaDescription,
     alternates: { canonical: blogOrigin() },
   };
 }
 
 export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
   const { tag = "", destination = "", page: pageParam = "1", q = "" } = await searchParams;
+  const locale = await getRequestLocale();
+  const copy = getSiteCopy(locale).blog;
   const repository = getBlogRepository();
   const published = await repository.listPublished();
   const home = await blogPath();
@@ -81,7 +89,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
     "@context": "https://schema.org",
     "@type": "Blog",
     name: "bibibigbar",
-    description: "Notes from the everyday.",
+    description: copy.subtitle,
     url: blogOrigin(),
   };
 
@@ -93,16 +101,16 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
           Bl<span className="title-mark">o</span>g
         </h1>
         <div className="blog-index-aside">
-          <span>Notes from the everyday</span>
+          <span>{copy.subtitle}</span>
           <span className="blog-index-count">
-            {filtered.length} {filtered.length === 1 ? "post" : "posts"}
+            {filtered.length} {filtered.length === 1 ? copy.post : copy.posts}
           </span>
         </div>
       </div>
 
       <div className="blog-filters">
         <Link href={hrefFor(1, "", "", query)} className={`blog-pill ${activeDestination || activeTag ? "" : "is-active"}`}>
-          All
+          {copy.all}
         </Link>
         {categories.map((item) => {
           const matchesDestination = published.some(
@@ -124,8 +132,8 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
         <form className="blog-search" action={home}>
           {activeDestination ? <input type="hidden" name="destination" value={activeDestination} /> : null}
           {activeTag ? <input type="hidden" name="tag" value={activeTag} /> : null}
-          <input name="q" defaultValue={query} placeholder="Search" aria-label="Search posts" />
-          <button type="submit" aria-label="Search">
+          <input name="q" defaultValue={query} placeholder={copy.search} aria-label={copy.searchAria} />
+          <button type="submit" aria-label={copy.search}>
             ⌕
           </button>
         </form>
@@ -133,7 +141,7 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
 
       {activeTag ? (
         <p className="blog-filters">
-          Tagged {activeTag}. <Link href={hrefFor(1, "", activeDestination, query)}>Clear tag</Link>
+          {copy.tagged} {activeTag}. <Link href={hrefFor(1, "", activeDestination, query)}>{copy.clearTag}</Link>
         </p>
       ) : null}
 
@@ -147,23 +155,26 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
           </div>
           <div className="blog-feature-copy">
             <p className="blog-feature-meta">
-              <span>Latest</span>
+              <span>{copy.latest}</span>
               <span>
-                {[categoryLabel(featured), shortDate(featured.publishedAt), `${featured.readingMinutes} min`]
+                {[
+                  categoryLabel(featured),
+                  shortDate(featured.publishedAt, locale),
+                  `${featured.readingMinutes} ${copy.min}`,
+                ]
                   .filter(Boolean)
                   .join(" · ")}
               </span>
             </p>
             <h2>{featured.title}</h2>
-            <span>Read →</span>
+            <span>{copy.read}</span>
           </div>
         </Link>
       ) : null}
 
-
       {rows.map((post) => (
         <Link key={post.id} href={postHref(post)} className="blog-row">
-          <span className="blog-row-date">{shortDate(post.publishedAt)}</span>
+          <span className="blog-row-date">{shortDate(post.publishedAt, locale)}</span>
           <span className="blog-row-title">{post.title}</span>
           <span className="blog-row-label">{categoryLabel(post)}</span>
           <span className="blog-row-arrow line-arrow">{"\u2197\uFE0E"}</span>
@@ -172,14 +183,14 @@ export default async function BlogIndexPage({ searchParams }: BlogIndexProps) {
 
       {!visible.length ? (
         <div className="blog-empty">
-          <h2>Nothing here yet.</h2>
-          <p>Published notes will show up on this list.</p>
+          <h2>{copy.emptyTitle}</h2>
+          <p>{copy.emptyBody}</p>
         </div>
       ) : null}
 
       {currentPage < pageCount ? (
         <div className="blog-more">
-          <Link href={hrefFor(currentPage + 1)}>Load more ↓</Link>
+          <Link href={hrefFor(currentPage + 1)}>{copy.loadMore}</Link>
         </div>
       ) : null}
     </div>

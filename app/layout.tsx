@@ -5,7 +5,9 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { adsenseClient } from "@/lib/blog/config";
 import { editorFontStylesheet } from "@/lib/blog/fonts";
+import { getRequestLocale } from "@/lib/get-locale";
 import { getCurrentUser } from "@/lib/queries";
+import { getSiteCopy } from "@/lib/site-copy";
 import "./globals.css";
 
 const archivoStylesheet =
@@ -54,12 +56,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headerStore = await headers();
+  const [headerStore, locale] = await Promise.all([headers(), getRequestLocale()]);
   const site = headerStore.get("x-bibibig-site");
   const isJournalHost = headerStore.get("x-bibibig-blog-mount") === "subdomain";
+  const htmlLang = locale === "ko" ? "ko" : "en";
   if (site === "blog") {
     return (
-      <html lang="en">
+      <html lang={htmlLang}>
         {isJournalHost ? (
           <head>
             <AdSenseScript />
@@ -75,9 +78,10 @@ export default async function RootLayout({
   }
 
   const user = await getCurrentUser();
+  const skip = getSiteCopy(locale).skip;
 
   return (
-    <html lang="en">
+    <html lang={htmlLang}>
       {site === "main" ? (
         <head>
           <AdSenseScript loadScript={false} />
@@ -85,7 +89,9 @@ export default async function RootLayout({
       ) : null}
       <body className="antialiased">
         <EditorFonts />
-        <a href="#main-content" className="skip-link">Skip to content</a>
+        <a href="#main-content" className="skip-link">
+          {skip}
+        </a>
         <SiteHeader user={user} />
         <main id="main-content">{children}</main>
         <SiteFooter />

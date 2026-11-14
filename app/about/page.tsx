@@ -1,36 +1,74 @@
 import type { Metadata } from "next";
+import { getRequestLocale } from "@/lib/get-locale";
+import { getSiteCopy } from "@/lib/site-copy";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: "bibibigbar is a developer and maker based in Dallas.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  const copy = getSiteCopy(locale).about;
+  return {
+    title: copy.metaTitle,
+    description: copy.metaDescription,
+  };
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const locale = await getRequestLocale();
+  const copy = getSiteCopy(locale).about;
+
   return (
-    <div className="container page-hero">
-      <p className="page-kicker">About</p>
-      <h1>
-        Hell<span className="title-mark">o</span>.
-      </h1>
-      <p className="mt-8 max-w-2xl text-xl leading-relaxed">
-        I&apos;m bibibigbar, a developer and maker based in Dallas. I build apps and websites, write about everyday life, and run a small shop.
-      </p>
-      <div className="soon-list mt-12">
-        <div className="soon-row">
-          <span className="soon-index">01</span>
-          <span>YouTube</span>
-          <span className="home-door-soon">Soon</span>
+    <div className="about-page">
+      <div className="about-hero">
+        <h1>{copy.title}</h1>
+        <div className="about-portrait" aria-hidden="true">
+          {copy.portrait}
         </div>
-        <div className="soon-row">
-          <span className="soon-index">02</span>
-          <span>Naver Blog</span>
-          <span className="home-door-soon">Soon</span>
+      </div>
+
+      <div className="about-hello">
+        <span>{copy.hello}</span>
+        <p>{copy.body}</p>
+      </div>
+
+      <div className="about-resume-head">
+        <span>{copy.resume}</span>
+        <span className="about-pdf is-disabled" aria-disabled="true">
+          {copy.downloadPdf}
+        </span>
+      </div>
+
+      <div className="about-timeline">
+        {copy.timeline.map((item) => (
+          <div key={`${item.period}-${item.role}`} className="about-timeline-row">
+            <span>{item.period}</span>
+            <strong>{item.role}</strong>
+            <span>{item.detail}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="about-tools">
+        <span>{copy.tools}</span>
+        <div className="about-skills">
+          {copy.skills.map((skill) => (
+            <span key={skill}>{skill}</span>
+          ))}
         </div>
-        <a className="soon-row" href="mailto:bibibigbar@gmail.com">
-          <span className="soon-index">03</span>
-          <span>Email</span>
-          <span className="line-arrow">{"\u2197\uFE0E"}</span>
-        </a>
+      </div>
+
+      <div className="about-channels">
+        {copy.channels.map((channel) => (
+          <a
+            key={channel.title}
+            href={channel.href}
+            className="about-channel"
+            target={channel.href.startsWith("mailto:") ? undefined : "_blank"}
+            rel={channel.href.startsWith("mailto:") ? undefined : "noreferrer"}
+          >
+            <span>{channel.label}</span>
+            <strong>{channel.title}</strong>
+            <span aria-hidden="true">↗</span>
+          </a>
+        ))}
       </div>
     </div>
   );

@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { logoutAction } from "@/lib/actions/auth";
-import { apexHomeHref, blogMenuHref, mainOrigin, shopMenuHref } from "@/lib/blog/config";
+import { apexHomeHref, blogMenuHref, mainOrigin } from "@/lib/blog/config";
+import { LocaleSwitch } from "@/components/locale-switch";
 import { SiteMenu } from "@/components/site-menu";
+import { getRequestLocale } from "@/lib/get-locale";
+import { getSiteCopy } from "@/lib/site-copy";
 import type { SessionUser } from "@/lib/types";
 
 interface SiteHeaderProps {
@@ -10,10 +13,11 @@ interface SiteHeaderProps {
 }
 
 export async function SiteHeader({ user }: SiteHeaderProps) {
-  const headerStore = await headers();
+  const [headerStore, locale] = await Promise.all([headers(), getRequestLocale()]);
   const onShopHost = headerStore.get("x-bibibig-site") === "shop";
   const homeHref = apexHomeHref(headerStore.get("host"), onShopHost);
   const pageHref = (pathName: string) => (onShopHost ? `${mainOrigin()}${pathName}` : pathName);
+  const nav = getSiteCopy(locale).nav;
 
   return (
     <header className="site-header">
@@ -28,22 +32,25 @@ export async function SiteHeader({ user }: SiteHeaderProps) {
           </a>
         )}
         <SiteMenu
+          locale={locale}
           blogHref={blogMenuHref()}
-          shopHref={shopMenuHref()}
+          mapHref={pageHref("/travel-map")}
           workHref={pageHref("/work")}
           aboutHref={pageHref("/about")}
           adminHref={pageHref("/admin")}
-          onShopHost={onShopHost}
         />
-        {user ? (
-          <form action={logoutAction} className="site-login">
-            <button type="submit">Log out</button>
-          </form>
-        ) : (
-          <Link href={pageHref("/login")} className="site-login">
-            Log in →
-          </Link>
-        )}
+        <div className="site-actions">
+          <LocaleSwitch locale={locale} />
+          {user ? (
+            <form action={logoutAction} className="site-login">
+              <button type="submit">{nav.logout}</button>
+            </form>
+          ) : (
+            <Link href={pageHref("/login")} className="site-login">
+              {nav.login}
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -15,6 +15,8 @@ import {
 import { getBlogRepository } from "@/lib/blog";
 import { blogPath, getBlogMount } from "@/lib/blog/paths";
 import type { BlogPost } from "@/lib/blog/types";
+import { getRequestLocale } from "@/lib/get-locale";
+import { getSiteCopy } from "@/lib/site-copy";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -76,7 +78,13 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
     if (!wantsPreview || user?.role !== "admin") notFound();
   }
 
-  const [home, published, mount] = await Promise.all([blogPath(), repository.listPublished(), getBlogMount()]);
+  const [home, published, mount, locale] = await Promise.all([
+    blogPath(),
+    repository.listPublished(),
+    getBlogMount(),
+    getRequestLocale(),
+  ]);
+  const copy = getSiteCopy(locale).blog;
   const textLength = post.content.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim().length;
   const showAds = mount === "subdomain" && post.status === "published" && textLength >= MIN_AD_TEXT_LENGTH;
   const recent = published.some((item) => item.id === post.id) ? published : [post, ...published];
@@ -85,7 +93,11 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   const nextHref = nextPost ? await blogPath(nextPost.slug) : "";
   const url = canonicalPostUrl(post.slug);
   const category = categoryLabel(post);
-  const meta = [category, post.publishedAt ? formatDate(post.publishedAt) : "", `${post.readingMinutes} min read`]
+  const meta = [
+    category,
+    post.publishedAt ? formatDate(post.publishedAt) : "",
+    `${post.readingMinutes} ${copy.minRead}`,
+  ]
     .filter(Boolean)
     .join(" · ");
   const tagHrefs = await Promise.all(post.tags.map(async (tag) => ({ tag, href: `${home}?tag=${encodeURIComponent(tag)}` })));
@@ -98,7 +110,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
         description: post.seoDescription || post.excerpt,
         datePublished: post.publishedAt || post.createdAt,
         dateModified: post.updatedAt,
-        inLanguage: "ko",
+        inLanguage: locale,
         mainEntityOfPage: url,
         image: post.coverImageUrl ? [post.coverImageUrl] : undefined,
         keywords: post.tags.join(", "),
@@ -108,7 +120,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Journal", item: blogOrigin() },
+          { "@type": "ListItem", position: 1, name: "Blog", item: blogOrigin() },
           { "@type": "ListItem", position: 2, name: post.title, item: url },
         ],
       },
@@ -118,9 +130,9 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
   return (
     <article>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {post.status !== "published" ? <p className="blog-note post-note">Draft preview. This page is not public.</p> : null}
+      {post.status !== "published" ? <p className="blog-note post-note">{copy.draftPreview}</p> : null}
       <div className="post-bar">
-        <Link href={home}>← All posts</Link>
+        <Link href={home}>{copy.allPosts}</Link>
         <span>{meta}</span>
       </div>
       <h1 className="post-title">{post.title}</h1>
@@ -131,7 +143,13 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
         ) : null}
       </div>
       <div className="post-layout">
-        <PostShare url={url} title={post.title} />
+        <PostShare
+          url={url}
+          title={post.title}
+          shareLabel={copy.share}
+          copyLabel={copy.copyLink}
+          copiedLabel={copy.copied}
+        />
         <div>
           {post.excerpt ? <p className="post-lede">{post.excerpt}</p> : null}
           {showAds ? <AdSlot client={adsenseClient()} slot={adsenseSlot("article")} /> : null}
@@ -150,7 +168,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPostPag
       </div>
       {nextPost ? (
         <Link href={nextHref} className="post-next">
-          <span>Next post</span>
+          <span>{copy.nextPost}</span>
           <strong>{nextPost.title}</strong>
           <span className="post-next-arrow">→</span>
         </Link>

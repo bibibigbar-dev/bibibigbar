@@ -5,9 +5,12 @@ import { useState } from "react";
 interface PostShareProps {
   url: string;
   title: string;
+  shareLabel: string;
+  copyLabel: string;
+  copiedLabel: string;
 }
 
-export function PostShare({ url, title }: PostShareProps) {
+export function PostShare({ url, title, shareLabel, copyLabel, copiedLabel }: PostShareProps) {
   const [copied, setCopied] = useState(false);
   const text = `${title} ${url}`;
 
@@ -23,9 +26,9 @@ export function PostShare({ url, title }: PostShareProps) {
 
   return (
     <div className="post-share">
-      <span>Share</span>
+      <span>{shareLabel}</span>
       <button type="button" onClick={copyLink}>
-        {copied ? "Copied" : "Copy link"}
+        {copied ? copiedLabel : copyLabel}
       </button>
       <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`} target="_blank" rel="noreferrer">
         X
